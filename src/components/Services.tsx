@@ -6,7 +6,9 @@ interface ServicesProps {
 }
 
 export function Services({ t }: ServicesProps) {
-  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
+  const [activeServiceId, setActiveServiceId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [renderedService, setRenderedService] = useState<any>(null);
 
   // Map of Icons corresponding to service IDs
   const iconsMap: Record<string, JSX.Element> = {
@@ -33,7 +35,25 @@ export function Services({ t }: ServicesProps) {
   };
 
   const services = t.services.list;
-  const selectedService = services.find((s: any) => s.id === selectedServiceId) || null;
+
+  const openModal = (id: string) => {
+    const s = services.find((x: any) => x.id === id);
+    if (!s) return;
+    setRenderedService(s);
+    setActiveServiceId(id);
+    // Small delay to trigger transition classes
+    setTimeout(() => {
+      setIsModalOpen(true);
+    }, 20);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setTimeout(() => {
+      setActiveServiceId(null);
+      setRenderedService(null);
+    }, 300); // Matches transition duration
+  };
 
   return (
     <section id="services" className="py-24 bg-gradient-to-b from-[#0b132b] to-[#050814] relative overflow-hidden">
@@ -71,7 +91,7 @@ export function Services({ t }: ServicesProps) {
               className="h-full"
             >
               <div
-                onClick={() => setSelectedServiceId(service.id)}
+                onClick={() => openModal(service.id)}
                 className="glow-card group h-full glass hover:border-gold-500/40 p-8 rounded-2xl transition-all duration-500 hover:-translate-y-2 cursor-pointer flex flex-col justify-between shadow-lg hover:shadow-gold-500/5"
               >
                 <div>
@@ -98,30 +118,34 @@ export function Services({ t }: ServicesProps) {
       </div>
 
       {/* Premium Detail Modal */}
-      {selectedService && (
+      {activeServiceId && renderedService && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           {/* Backdrop with extreme blur and fade */}
           <div
-            onClick={() => setSelectedServiceId(null)}
-            className="absolute inset-0 bg-navy-950/80 backdrop-blur-md transition-opacity duration-300"
+            onClick={closeModal}
+            className={`absolute inset-0 bg-navy-950/80 backdrop-blur-md transition-opacity duration-300 ease-out ${
+              isModalOpen ? "opacity-100" : "opacity-0"
+            }`}
           />
 
           {/* Modal Container */}
           <div
-            className="relative w-full max-w-3xl glass bg-navy-950/95 border border-gold-500/30 rounded-2xl max-h-[90vh] overflow-y-auto shadow-2xl shadow-gold-500/5 animate-in fade-in zoom-in duration-300 flex flex-col"
+            className={`relative w-full max-w-3xl glass bg-navy-950/95 border border-gold-500/30 rounded-2xl max-h-[90vh] overflow-y-auto shadow-2xl shadow-gold-500/5 transition-all duration-300 ease-out flex flex-col ${
+              isModalOpen ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-4"
+            }`}
           >
             {/* Modal Header */}
             <div className="sticky top-0 bg-navy-950/90 backdrop-blur border-b border-white/5 p-6 flex justify-between items-center z-10">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 bg-gold-500/10 border border-gold-500/30 rounded-lg flex items-center justify-center">
-                  {iconsMap[selectedService.id]}
+                  {iconsMap[renderedService.id]}
                 </div>
                 <h3 className="font-serif text-xl sm:text-2xl font-bold text-white">
-                  {selectedService.title}
+                  {renderedService.title}
                 </h3>
               </div>
               <button
-                onClick={() => setSelectedServiceId(null)}
+                onClick={closeModal}
                 className="w-8 h-8 rounded-full border border-white/10 hover:border-gold-500/50 flex items-center justify-center text-white/60 hover:text-gold-400 hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer"
                 aria-label={t.common.close}
               >
@@ -139,7 +163,7 @@ export function Services({ t }: ServicesProps) {
                   {t.services.modalDescTitle}
                 </h4>
                 <p className="font-sans text-navy-200/80 text-sm sm:text-base leading-relaxed">
-                  {selectedService.longDesc}
+                  {renderedService.longDesc}
                 </p>
               </div>
 
@@ -152,7 +176,7 @@ export function Services({ t }: ServicesProps) {
                     {t.services.modalSpecialTitle}
                   </h4>
                   <ul className="space-y-3">
-                    {selectedService.features.map((feature: string, fIdx: number) => (
+                    {renderedService.features.map((feature: string, fIdx: number) => (
                       <li key={fIdx} className="flex gap-2.5 items-start text-xs sm:text-sm font-sans text-navy-200/70">
                         <svg className="w-4 h-4 text-gold-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
@@ -170,7 +194,7 @@ export function Services({ t }: ServicesProps) {
                     {t.services.modalMethodTitle}
                   </h4>
                   <ol className="space-y-4">
-                    {selectedService.workflow.map((step: string, sIdx: number) => (
+                    {renderedService.workflow.map((step: string, sIdx: number) => (
                       <li key={sIdx} className="flex gap-3 items-start">
                         <span className="w-6 h-6 rounded-full bg-navy-900 border border-gold-500/20 text-gold-400 text-[10px] font-sans font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
                           {sIdx + 1}
@@ -190,7 +214,7 @@ export function Services({ t }: ServicesProps) {
             {/* Modal Footer */}
             <div className="sticky bottom-0 bg-navy-950/90 backdrop-blur border-t border-white/5 p-6 flex flex-col sm:flex-row gap-4 sm:justify-end z-10">
               <button
-                onClick={() => setSelectedServiceId(null)}
+                onClick={closeModal}
                 className="px-6 py-2.5 border border-white/10 hover:border-white/20 text-white font-sans text-sm font-semibold rounded hover:bg-white/[0.02] active:scale-95 transition-all duration-300 cursor-pointer"
               >
                 {t.common.close}
@@ -198,10 +222,10 @@ export function Services({ t }: ServicesProps) {
               <a
                 href="#contact"
                 onClick={() => {
-                  setSelectedServiceId(null);
+                  closeModal();
                   const element = document.getElementById("contact");
                   if (element) {
-                    setTimeout(() => element.scrollIntoView({ behavior: "smooth" }), 200);
+                    setTimeout(() => element.scrollIntoView({ behavior: "smooth" }), 350);
                   }
                 }}
                 className="btn-gold px-6 py-2.5 text-navy-950 font-sans text-sm font-bold rounded shadow-lg shadow-gold-500/10 text-center cursor-pointer"

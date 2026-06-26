@@ -8,25 +8,109 @@ interface ClientDashboardProps {
 
 export function ClientDashboard({ userEmail, onLogout, t }: ClientDashboardProps) {
   const [downloadingFile, setDownloadingFile] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [uploadingFiles, setUploadingFiles] = useState<{ name: string; progress: number; size: string }[]>([]);
+  
+  const [uploadedFiles, setUploadedFiles] = useState([
+    { name: "Balance_General_Q1_2026.pdf", size: "2.4 MB", date: "15/05/2026" },
+    { name: "Declaracion_Impuesto_Anual_SAT.pdf", size: "4.8 MB", date: "30/04/2026" },
+    { name: "Libro_Compra_Venta_Mayo.xlsx", size: "1.2 MB", date: "05/06/2026" },
+    { name: "Declaracion_Mensual_IVA_SAT.pdf", size: "850 KB", date: "12/06/2026" },
+  ]);
+
+  const isEs = t.dashboard.title === "Panel Empresarial" || t.dashboard.title === "Panel de Control";
+
+  const localT = {
+    dragDropText: isEs ? "Arrastra y suelta tus documentos contables aquí" : "Drag and drop your accounting documents here",
+    orClickText: isEs ? "o haz clic para explorar tus archivos" : "or click to browse your files",
+    uploadLimit: isEs ? "Formatos aceptados: PDF, XML, XLSX o JPG (Máx. 10MB)" : "Accepted formats: PDF, XML, XLSX or JPG (Max. 10MB)",
+    uploadingTitle: isEs ? "Cargando documentos a PROSERCO..." : "Uploading documents to PROSERCO...",
+    uploadSuccess: isEs ? "Archivo cargado y procesado con éxito" : "File successfully uploaded and processed",
+    deleteTooltip: isEs ? "Eliminar archivo" : "Delete file",
+  };
 
   const simulateDownload = (filename: string) => {
     setDownloadingFile(filename);
     setTimeout(() => {
       setDownloadingFile(null);
       alert(t.dashboard.successToast.replace("{filename}", filename));
-    }, 1500);
+    }, 1200);
+  };
+
+  const handleDeleteFile = (filename: string) => {
+    if (confirm(isEs ? `¿Está seguro de eliminar ${filename}?` : `Are you sure you want to delete ${filename}?`)) {
+      setUploadedFiles((prev) => prev.filter((f) => f.name !== filename));
+    }
+  };
+
+  // Drag and drop event handlers
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      startUpload(e.dataTransfer.files);
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      startUpload(e.target.files);
+    }
+  };
+
+  const startUpload = (fileList: FileList) => {
+    const newUploads = Array.from(fileList).map((file) => {
+      const sizeStr = file.size > 1024 * 1024 
+        ? `${(file.size / (1024 * 1024)).toFixed(1)} MB`
+        : `${(file.size / 1024).toFixed(0)} KB`;
+      return {
+        name: file.name,
+        size: sizeStr,
+        progress: 0,
+      };
+    });
+
+    setUploadingFiles((prev) => [...prev, ...newUploads]);
+
+    newUploads.forEach((upFile) => {
+      let currentProgress = 0;
+      const interval = setInterval(() => {
+        currentProgress += 10;
+        setUploadingFiles((prev) =>
+          prev.map((f) => (f.name === upFile.name ? { ...f, progress: currentProgress } : f))
+        );
+
+        if (currentProgress >= 100) {
+          clearInterval(interval);
+          
+          // Add to files list
+          const today = new Date();
+          const dateStr = `${String(today.getDate()).padStart(2, "0")}/${String(today.getMonth() + 1).padStart(2, "0")}/${today.getFullYear()}`;
+          
+          setUploadedFiles((prev) => [
+            { name: upFile.name, size: upFile.size, date: dateStr },
+            ...prev,
+          ]);
+
+          // Remove from uploading list
+          setUploadingFiles((prev) => prev.filter((f) => f.name !== upFile.name));
+        }
+      }, 150);
+    });
   };
 
   // Dynamic prefilled links (Updated for Guatemala consult number +502)
   const whatsappUrl = "https://wa.me/50255481234?text=Hola%20Claudio,%20necesito%20hacer%20una%20consulta%20sobre%20el%20balance%20mensual%20de%20nuestra%20empresa.";
   const gmailUrl = `mailto:contacto@proserco.com?subject=Consulta%20Cliente%20-%20${userEmail}&body=Estimado%20equipo%20de%20PROSERCO,%20solicito%20revisar%20el%20siguiente%20punto%20de%20mi%20cuenta...`;
-
-  const files = [
-    { name: "Balance_General_Q1_2026.pdf", size: "2.4 MB", date: "15/05/2026" },
-    { name: "Declaracion_Impuesto_Anual_SAT.pdf", size: "4.8 MB", date: "30/04/2026" },
-    { name: "Libro_Compra_Venta_Mayo.xlsx", size: "1.2 MB", date: "05/06/2026" },
-    { name: "Declaracion_Mensual_IVA_SAT.pdf", size: "850 KB", date: "12/06/2026" },
-  ];
 
   return (
     <div className="min-h-screen bg-[#050814] text-white pt-24 pb-16">
@@ -128,8 +212,9 @@ export function ClientDashboard({ userEmail, onLogout, t }: ClientDashboardProps
 
         {/* Dashboard Grid body */}
         <div className="grid lg:grid-cols-12 gap-8">
-          {/* Column Left: Graphs and charts */}
+          {/* Column Left: Graphs and documents */}
           <div className="lg:col-span-8 space-y-8">
+            
             {/* Chart Area */}
             <div className="glass p-6 sm:p-8 rounded-3xl border border-white/5">
               <h3 className="font-serif text-lg sm:text-xl font-bold text-white mb-6">
@@ -139,10 +224,10 @@ export function ClientDashboard({ userEmail, onLogout, t }: ClientDashboardProps
               {/* CSS Driven Bar Chart */}
               <div className="h-64 flex items-end justify-between gap-4 pt-4 border-b border-white/5 px-2">
                 {[
-                  { month: "Jan", val: 65, color: "bg-navy-400" },
+                  { month: "Ene", val: 65, color: "bg-navy-400" },
                   { month: "Feb", val: 45, color: "bg-navy-400" },
                   { month: "Mar", val: 80, color: "bg-gold-500 shadow-md shadow-gold-500/10" },
-                  { month: "Apr", val: 120, color: "bg-gold-600 shadow-md shadow-gold-500/25" },
+                  { month: "Abr", val: 120, color: "bg-gold-600 shadow-md shadow-gold-500/25" },
                   { month: "May", val: 75, color: "bg-navy-400" },
                   { month: "Jun", val: 90, color: "bg-navy-300" },
                 ].map((item, idx) => (
@@ -166,13 +251,81 @@ export function ClientDashboard({ userEmail, onLogout, t }: ClientDashboardProps
               </p>
             </div>
 
-            {/* Document Download Section */}
-            <div className="glass p-6 sm:p-8 rounded-3xl border border-white/5">
-              <h3 className="font-serif text-lg sm:text-xl font-bold text-white mb-6">
-                {t.dashboard.tableTitle}
-              </h3>
+            {/* Document upload section & list */}
+            <div className="glass p-6 sm:p-8 rounded-3xl border border-white/5 space-y-8">
+              <div>
+                <h3 className="font-serif text-lg sm:text-xl font-bold text-white mb-2">
+                  {t.dashboard.tableTitle}
+                </h3>
+                <p className="text-xs font-sans text-navy-200/50">
+                  {isEs 
+                    ? "Carga archivos tributarios, facturas o planillas para que sean revisados por tu gestor asignado."
+                    : "Upload tax files, invoices, or payroll sheets to be reviewed by your assigned manager."}
+                </p>
+              </div>
 
-              <div className="overflow-x-auto">
+              {/* Drag & Drop Area */}
+              <div
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                onClick={() => document.getElementById("file-upload")?.click()}
+                className={`border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-300 flex flex-col items-center justify-center gap-3 group ${
+                  isDragging 
+                    ? "border-gold-500 bg-gold-500/5 scale-[1.01] shadow-lg shadow-gold-500/5"
+                    : "border-white/10 bg-white/[0.01] hover:border-gold-500/30 hover:bg-white/[0.02]"
+                }`}
+              >
+                <input
+                  type="file"
+                  id="file-upload"
+                  className="hidden"
+                  multiple
+                  onChange={handleFileSelect}
+                />
+                <div className="w-12 h-12 rounded-full bg-gold-500/10 border border-gold-500/20 flex items-center justify-center text-gold-400 group-hover:scale-110 group-hover:border-gold-500/40 transition-all duration-300">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs sm:text-sm font-sans font-semibold text-white">
+                    {localT.dragDropText}
+                  </p>
+                  <p className="text-[11px] font-sans text-navy-200/50">
+                    {localT.orClickText}
+                  </p>
+                </div>
+                <span className="text-[10px] font-sans text-navy-200/30">
+                  {localT.uploadLimit}
+                </span>
+              </div>
+
+              {/* Uploading Progress bars */}
+              {uploadingFiles.length > 0 && (
+                <div className="space-y-4 bg-navy-950/40 border border-white/5 p-4 rounded-xl">
+                  <h4 className="text-xs font-sans font-bold text-gold-400 uppercase tracking-wider">
+                    {localT.uploadingTitle}
+                  </h4>
+                  {uploadingFiles.map((upFile) => (
+                    <div key={upFile.name} className="space-y-2">
+                      <div className="flex justify-between text-xs font-sans text-white/80">
+                        <span className="truncate max-w-[70%]">{upFile.name}</span>
+                        <span>{upFile.progress}%</span>
+                      </div>
+                      <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                        <div
+                          className="h-full bg-gold-500 transition-all duration-150"
+                          style={{ width: `${upFile.progress}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Documents Table */}
+              <div className="overflow-x-auto pt-2">
                 <table className="w-full text-left text-xs font-sans border-collapse">
                   <thead>
                     <tr className="border-b border-white/5 text-navy-200/40 font-bold uppercase tracking-wider">
@@ -183,23 +336,34 @@ export function ClientDashboard({ userEmail, onLogout, t }: ClientDashboardProps
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/5 text-navy-200/80">
-                    {files.map((file) => (
-                      <tr key={file.name} className="hover:bg-white/[0.01] transition-colors">
+                    {uploadedFiles.map((file) => (
+                      <tr key={file.name} className="hover:bg-white/[0.01] transition-colors group">
                         <td className="py-4 font-medium text-white flex items-center gap-3">
                           <svg className="w-4 h-4 text-gold-500/80 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                           </svg>
-                          <span>{file.name}</span>
+                          <span className="truncate max-w-[200px] sm:max-w-[300px]" title={file.name}>
+                            {file.name}
+                          </span>
                         </td>
                         <td className="py-4 text-center text-navy-200/50">{file.date}</td>
                         <td className="py-4 text-center text-navy-200/50">{file.size}</td>
-                        <td className="py-4 text-right">
+                        <td className="py-4 text-right flex items-center justify-end gap-2.5">
                           <button
                             onClick={() => simulateDownload(file.name)}
                             disabled={downloadingFile === file.name}
-                            className="px-3.5 py-1.5 bg-navy-950/60 border border-white/5 hover:border-gold-500/30 text-gold-400 hover:text-white rounded-lg text-[10px] font-bold tracking-wider uppercase transition-all duration-300 disabled:opacity-40 cursor-pointer"
+                            className="px-3 py-1.5 bg-navy-950/60 border border-white/5 hover:border-gold-500/30 text-gold-400 hover:text-white rounded-lg text-[10px] font-bold tracking-wider uppercase transition-all duration-300 disabled:opacity-40 cursor-pointer"
                           >
                             {downloadingFile === file.name ? t.dashboard.btnDownloading : t.dashboard.btnDownload}
+                          </button>
+                          <button
+                            onClick={() => handleDeleteFile(file.name)}
+                            className="p-1.5 text-navy-200/30 hover:text-rose-500 hover:bg-rose-500/5 border border-transparent hover:border-rose-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer"
+                            title={localT.deleteTooltip}
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
                           </button>
                         </td>
                       </tr>

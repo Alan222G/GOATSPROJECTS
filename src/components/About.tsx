@@ -7,8 +7,20 @@ interface AboutProps {
 
 export function About({ t }: AboutProps) {
   const [activeMilestone, setActiveMilestone] = useState(0);
+  const [renderMilestone, setRenderMilestone] = useState(0);
+  const [isFading, setIsFading] = useState(false);
 
   const milestones = t.about.timeline;
+
+  const handleMilestoneChange = (idx: number) => {
+    if (idx === renderMilestone) return;
+    setIsFading(true);
+    setTimeout(() => {
+      setRenderMilestone(idx);
+      setActiveMilestone(idx);
+      setIsFading(false);
+    }, 250); // delay matches animation fade out
+  };
 
   return (
     <section id="about" className="py-24 bg-gradient-to-b from-[#050814] to-[#0b132b] relative overflow-hidden">
@@ -130,7 +142,7 @@ export function About({ t }: AboutProps) {
               {milestones.map((milestone: any, idx: number) => (
                 <button
                   key={milestone.year}
-                  onClick={() => setActiveMilestone(idx)}
+                  onClick={() => handleMilestoneChange(idx)}
                   className="relative z-10 flex flex-col items-center focus:outline-none cursor-pointer group"
                 >
                   <div
@@ -153,43 +165,49 @@ export function About({ t }: AboutProps) {
               ))}
             </div>
 
-            {/* Active Milestone Card */}
-            <div className="relative min-h-[220px] bg-navy-950/40 border border-white/5 rounded-2xl p-6 sm:p-8 transition-all duration-500 flex flex-col md:flex-row gap-8 items-start">
-              <div className="md:w-2/3">
-                <span className="text-gold-400 font-serif text-4xl sm:text-5xl font-extrabold block mb-2">
-                  {milestones[activeMilestone].year}
-                </span>
-                <h4 className="font-serif text-xl sm:text-2xl font-bold text-white mb-4">
-                  {milestones[activeMilestone].title}
-                </h4>
-                <p className="font-sans text-navy-200/80 text-sm sm:text-base leading-relaxed">
-                  {milestones[activeMilestone].description}
-                </p>
-              </div>
-              <div className="md:w-1/3 w-full bg-white/[0.02] border border-white/5 rounded-xl p-5">
-                <span className="text-xs font-sans text-white/40 font-bold uppercase tracking-wider block mb-3">
-                  {t.about.achievementsText}
-                </span>
-                <ul className="space-y-3">
-                  {milestones[activeMilestone].details.map((detail: string, dIdx: number) => (
-                    <li key={dIdx} className="flex gap-2.5 items-start text-xs font-sans text-navy-200/70">
-                      <svg
-                        className="w-4 h-4 text-gold-500 mt-0.5 flex-shrink-0"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2.5}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      <span>{detail}</span>
-                    </li>
-                  ))}
-                </ul>
+            {/* Active Milestone Card with smooth cinematic fade/slide transition */}
+            <div className="relative min-h-[220px] bg-navy-950/40 border border-white/5 rounded-2xl p-6 sm:p-8 overflow-hidden">
+              <div
+                className={`transition-all duration-300 ease-out flex flex-col md:flex-row gap-8 items-start ${
+                  isFading ? "opacity-0 translate-y-4 blur-xs" : "opacity-100 translate-y-0 blur-none"
+                }`}
+              >
+                <div className="md:w-2/3">
+                  <span className="text-gold-400 font-serif text-4xl sm:text-5xl font-extrabold block mb-2">
+                    {milestones[renderMilestone].year}
+                  </span>
+                  <h4 className="font-serif text-xl sm:text-2xl font-bold text-white mb-4">
+                    {milestones[renderMilestone].title}
+                  </h4>
+                  <p className="font-sans text-navy-200/80 text-sm sm:text-base leading-relaxed">
+                    {milestones[renderMilestone].description}
+                  </p>
+                </div>
+                <div className="md:w-1/3 w-full bg-white/[0.02] border border-white/5 rounded-xl p-5">
+                  <span className="text-xs font-sans text-white/40 font-bold uppercase tracking-wider block mb-3">
+                    {t.about.achievementsText}
+                  </span>
+                  <ul className="space-y-3">
+                    {milestones[renderMilestone].details.map((detail: string, dIdx: number) => (
+                      <li key={dIdx} className="flex gap-2.5 items-start text-xs font-sans text-navy-200/70">
+                        <svg
+                          className="w-4 h-4 text-gold-500 mt-0.5 flex-shrink-0"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2.5}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                        <span>{detail}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </div>
 
