@@ -1,58 +1,14 @@
 import { useState } from "react";
 import { ScrollReveal } from "./ScrollReveal";
 
-interface Milestone {
-  year: string;
-  title: string;
-  description: string;
-  details: string[];
+interface AboutProps {
+  t: any;
 }
 
-export function About() {
+export function About({ t }: AboutProps) {
   const [activeMilestone, setActiveMilestone] = useState(0);
 
-  const milestones: Milestone[] = [
-    {
-      year: "2006",
-      title: "Fundación de la Firma",
-      description: "PROSERCO inicia operaciones en Santiago con un equipo de 3 socios fundadores enfocados en asesoría tributaria y contabilidad corporativa.",
-      details: [
-        "Establecimiento de las bases de integridad profesional",
-        "Primeros 20 clientes corporativos en industrias clave",
-        "Especialización en cumplimiento tributario local"
-      ]
-    },
-    {
-      year: "2012",
-      title: "Expansión de Servicios & Cobertura",
-      description: "Ampliamos la gama de soluciones incorporando auditoría operativa y consultoría financiera estratégica para medianas empresas.",
-      details: [
-        "Inauguración de departamento especializado de Auditoría",
-        "Aumento del equipo a 15 profesionales experimentados",
-        "Certificación en normas internacionales de contabilidad (IFRS)"
-      ]
-    },
-    {
-      year: "2018",
-      title: "Revolución Digital y Nube",
-      description: "Migramos toda la infraestructura de gestión y el 100% de la contabilidad de nuestros clientes a plataformas inteligentes basadas en la nube.",
-      details: [
-        "Implementación de portales de autoservicio y reportería en tiempo real",
-        "Reducción del 45% en los tiempos de conciliación bancaria",
-        "Asociación con los principales ERPs del mercado"
-      ]
-    },
-    {
-      year: "2026",
-      title: "Auditoría de Precisión Predictiva",
-      description: "Integramos herramientas avanzadas de analítica forense digital y predicción fiscal para anticipar contingencias tributarias.",
-      details: [
-        "Auditorías fiscales preventivas basadas en modelos predictivos",
-        "Asesoría de negocio adaptada a la economía digital y criptoactivos",
-        "Firma líder en contabilidad corporativa inteligente"
-      ]
-    }
-  ];
+  const milestones = t.about.timeline;
 
   return (
     <section id="about" className="py-24 bg-gradient-to-b from-[#050814] to-[#0b132b] relative overflow-hidden">
@@ -65,12 +21,12 @@ export function About() {
         <div className="text-center mb-20">
           <ScrollReveal delay={100} direction="down">
             <span className="text-gold-500 text-xs font-semibold tracking-[0.25em] uppercase">
-              Quiénes Somos
+              {t.about.tag}
             </span>
           </ScrollReveal>
           <ScrollReveal delay={200} direction="up">
             <h2 className="font-serif text-3xl md:text-5xl font-bold text-white mt-3">
-              Compromiso de Clase Mundial
+              {t.about.title}
             </h2>
           </ScrollReveal>
           <ScrollReveal delay={300} direction="up">
@@ -100,17 +56,14 @@ export function About() {
                   </svg>
                 </div>
                 <h3 className="font-serif text-2xl font-bold text-white mb-4">
-                  Misión
+                  {t.about.missionTitle}
                 </h3>
                 <p className="font-sans text-navy-200/70 leading-relaxed">
-                  Proporcionar servicios contables y financieros de la más alta calidad,
-                  basados en la integridad y el profesionalismo, que permitan a nuestros
-                  clientes tomar decisiones estratégicas informadas y alcanzar sus
-                  objetivos empresariales con confianza.
+                  {t.about.missionDesc}
                 </p>
               </div>
               <div className="mt-8 pt-6 border-t border-white/5 flex items-center gap-3 text-gold-400 font-sans text-xs font-semibold tracking-wider uppercase group-hover:gap-5 transition-all duration-300">
-                Rigurosidad · Ética · Excelencia
+                {t.about.missionFooter}
               </div>
             </div>
           </ScrollReveal>
@@ -141,16 +94,14 @@ export function About() {
                   </svg>
                 </div>
                 <h3 className="font-serif text-2xl font-bold text-white mb-4">
-                  Visión
+                  {t.about.visionTitle}
                 </h3>
                 <p className="font-sans text-navy-200/70 leading-relaxed">
-                  Ser la firma de contadores públicos líder en el mercado, reconocida por
-                  nuestra excelencia profesional, innovación constante y compromiso
-                  irrefutable con el éxito financiero de nuestros clientes a largo plazo.
+                  {t.about.visionDesc}
                 </p>
               </div>
               <div className="mt-8 pt-6 border-t border-white/5 flex items-center gap-3 text-navy-300 font-sans text-xs font-semibold tracking-wider uppercase group-hover:gap-5 transition-all duration-300">
-                Liderazgo · Innovación · Futuro
+                {t.about.visionFooter}
               </div>
             </div>
           </ScrollReveal>
@@ -160,10 +111,10 @@ export function About() {
         <ScrollReveal delay={200} direction="up">
           <div className="glow-card glass p-8 sm:p-12 rounded-3xl border border-white/5 relative overflow-hidden">
             <h3 className="font-serif text-2xl sm:text-3xl font-bold text-white mb-4 text-center">
-              Nuestra Evolución
+              {t.about.timelineTitle}
             </h3>
             <p className="font-sans text-navy-200/60 text-sm text-center mb-12 max-w-xl mx-auto">
-              Haz clic en los hitos para explorar cómo hemos crecido junto a nuestros clientes a lo largo de las décadas.
+              {t.about.timelineDesc}
             </p>
 
             {/* Timeline Line & Controls */}
@@ -176,7 +127,7 @@ export function About() {
                 style={{ width: `${(activeMilestone / (milestones.length - 1)) * 100}%` }}
               />
 
-              {milestones.map((milestone, idx) => (
+              {milestones.map((milestone: any, idx: number) => (
                 <button
                   key={milestone.year}
                   onClick={() => setActiveMilestone(idx)}
@@ -217,10 +168,10 @@ export function About() {
               </div>
               <div className="md:w-1/3 w-full bg-white/[0.02] border border-white/5 rounded-xl p-5">
                 <span className="text-xs font-sans text-white/40 font-bold uppercase tracking-wider block mb-3">
-                  Logros Clave:
+                  {t.about.achievementsText}
                 </span>
                 <ul className="space-y-3">
-                  {milestones[activeMilestone].details.map((detail, dIdx) => (
+                  {milestones[activeMilestone].details.map((detail: string, dIdx: number) => (
                     <li key={dIdx} className="flex gap-2.5 items-start text-xs font-sans text-navy-200/70">
                       <svg
                         className="w-4 h-4 text-gold-500 mt-0.5 flex-shrink-0"

@@ -4,9 +4,10 @@ interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
   onLoginSuccess: (userEmail: string) => void;
+  t: any;
 }
 
-export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps) {
+export function LoginModal({ isOpen, onClose, onLoginSuccess, t }: LoginModalProps) {
   const [email, setEmail] = useState("cliente@empresa.com");
   const [password, setPassword] = useState("proserco2026");
   const [showPassword, setShowPassword] = useState(false);
@@ -29,21 +30,19 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
     setError("");
 
     if (!email.trim() || !password.trim()) {
-      setError("Por favor, complete todos los campos.");
+      setError(t.login.errorEmpty);
       return;
     }
 
     setIsLoading(true);
 
-    // Simulate authentication check
     setTimeout(() => {
       setIsLoading(false);
-      // Accept anything as demo but display correct credentials info
       if (email.toLowerCase().includes("@") && password.length >= 4) {
         onLoginSuccess(email);
         onClose();
       } else {
-        setError("Credenciales inválidas. Intente con el usuario demo.");
+        setError(t.login.errorInvalid);
       }
     }, 1500);
   };
@@ -65,7 +64,7 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
         <button
           onClick={onClose}
           className="absolute top-4 right-4 w-8 h-8 rounded-full border border-white/10 hover:border-gold-500/50 flex items-center justify-center text-white/60 hover:text-gold-400 hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer"
-          aria-label="Cerrar"
+          aria-label={t.common.close}
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -78,20 +77,20 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
             <span className="text-gold-500 font-serif font-bold text-2xl">P</span>
           </div>
           <h3 className="font-serif text-2xl font-bold text-white">
-            Portal Corporativo
+            {t.login.title}
           </h3>
           <p className="font-sans text-navy-200/50 text-xs mt-1">
-            Ingreso exclusivo para clientes de PROSERCO
+            {t.login.subtitle}
           </p>
         </div>
 
         {/* Demo Credentials alert */}
         <div className="mb-6 p-3.5 bg-gold-500/5 border border-gold-500/20 rounded-xl text-left">
           <span className="block text-[10px] font-sans text-gold-400 font-bold uppercase tracking-wider mb-1">
-            Acceso de Prueba:
+            {t.login.demoTitle}
           </span>
           <p className="font-sans text-navy-200/60 text-xs leading-relaxed">
-            Hemos pre-llenado credenciales demo de una empresa ficticia para que pruebes el panel. Solo haz clic en <strong>Iniciar Sesión</strong>.
+            {t.login.demoDesc}
           </p>
         </div>
 
@@ -100,7 +99,7 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
           {/* Email */}
           <div>
             <label htmlFor="login-email" className="block text-xs font-sans text-white/65 font-semibold uppercase tracking-wider mb-2">
-              Correo Institucional
+              {t.login.labelEmail}
             </label>
             <div className="relative">
               <input
@@ -118,7 +117,7 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
           {/* Password */}
           <div>
             <label htmlFor="login-password" className="block text-xs font-sans text-white/65 font-semibold uppercase tracking-wider mb-2">
-              Contraseña
+              {t.login.labelPass}
             </label>
             <div className="relative">
               <input
@@ -158,10 +157,10 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
           <div className="flex justify-between items-center text-xs font-sans text-navy-200/50 pt-2">
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" className="accent-gold-500 rounded bg-navy-900 border-white/5" defaultChecked />
-              <span>Recordar cuenta</span>
+              <span>{t.login.chkRemember}</span>
             </label>
             <a href="#" className="hover:text-gold-400 transition-colors">
-              ¿Olvidó su contraseña?
+              {t.login.btnForgot}
             </a>
           </div>
 
@@ -176,19 +175,19 @@ export function LoginModal({ isOpen, onClose, onLoginSuccess }: LoginModalProps)
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                 </svg>
-                <span>Validando...</span>
+                <span>{t.login.btnValidating}</span>
               </>
             ) : (
-              <span>Iniciar Sesión</span>
+              <span>{t.login.btnSubmit}</span>
             )}
           </button>
         </form>
 
         <div className="mt-6 border-t border-white/5 pt-4 text-center">
           <span className="text-xs font-sans text-navy-200/40">
-            ¿Su empresa no cuenta con portal?{" "}
+            {t.login.noPortalText}{" "}
             <a href="#contact" onClick={onClose} className="text-gold-400 font-semibold hover:underline">
-              Contáctenos
+              {t.login.noPortalLink}
             </a>
           </span>
         </div>

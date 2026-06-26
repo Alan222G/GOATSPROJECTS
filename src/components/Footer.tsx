@@ -1,14 +1,15 @@
 interface FooterProps {
   scrollToSection: (id: string) => void;
+  t: any;
 }
 
-export function Footer({ scrollToSection }: FooterProps) {
+export function Footer({ scrollToSection, t }: FooterProps) {
   const quickLinks = [
-    { label: "Inicio", target: "hero" },
-    { label: "Sobre Nosotros", target: "about" },
-    { label: "Nuestros Servicios", target: "services" },
-    { label: "Simulador Tributario", target: "calculator" },
-    { label: "Contacto", target: "contact" },
+    { label: t.nav.home, target: "hero" },
+    { label: t.nav.about, target: "about" },
+    { label: t.nav.services, target: "services" },
+    { label: t.nav.calculator, target: "calculator" },
+    { label: t.nav.contact, target: "contact" },
   ];
 
   return (
@@ -29,19 +30,19 @@ export function Footer({ scrollToSection }: FooterProps) {
                   PROSERCO
                 </span>
                 <span className="text-[9px] font-sans text-gold-400/70 tracking-[0.2em] font-semibold mt-1">
-                  CONTADORES PÚBLICOS
+                  {t.footer.logoSubtitle}
                 </span>
               </div>
             </div>
             <p className="font-sans text-navy-200/50 text-sm max-w-sm leading-relaxed">
-              Firma líder en asesoría contable, tributaria y de auditoría de alta precisión. Impulsamos la solidez y el crecimiento financiero de su corporación.
+              {t.footer.desc}
             </p>
           </div>
 
           {/* Quick Links */}
           <div>
             <h4 className="text-xs font-sans text-white uppercase tracking-widest font-bold mb-6">
-              Mapa del Sitio
+              {t.footer.mapTitle}
             </h4>
             <ul className="space-y-4">
               {quickLinks.map((link) => (
@@ -60,20 +61,15 @@ export function Footer({ scrollToSection }: FooterProps) {
           {/* Legal / Hours */}
           <div>
             <h4 className="text-xs font-sans text-white uppercase tracking-widest font-bold mb-6">
-              Horario de Atención
+              {t.footer.hoursTitle}
             </h4>
             <ul className="space-y-4 text-sm font-sans text-navy-200/50">
-              <li>
-                <span className="block text-white font-medium">Lunes a Jueves:</span>
-                09:00 - 18:30 hrs
-              </li>
-              <li>
-                <span className="block text-white font-medium">Viernes:</span>
-                09:00 - 17:00 hrs
-              </li>
-              <li className="text-gold-500 font-medium">
-                Sábado y Domingo: Cerrado
-              </li>
+              {t.footer.hours.map((hour: any, idx: number) => (
+                <li key={idx}>
+                  <span className="block text-white font-medium">{hour.label}</span>
+                  {hour.val}
+                </li>
+              ))}
             </ul>
           </div>
         </div>
@@ -81,10 +77,10 @@ export function Footer({ scrollToSection }: FooterProps) {
         <hr className="border-white/5 my-8" />
 
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-xs font-sans text-navy-200/40">
-          <p>© 2026 PROSERCO Contadores Públicos. Todos los derechos reservados.</p>
+          <p>{t.footer.copyright}</p>
           <div className="flex gap-6">
-            <a href="#" className="hover:text-white transition-colors">Términos de Servicio</a>
-            <a href="#" className="hover:text-white transition-colors">Políticas de Privacidad</a>
+            <a href="#" className="hover:text-white transition-colors">{t.footer.terms}</a>
+            <a href="#" className="hover:text-white transition-colors">{t.footer.privacy}</a>
           </div>
         </div>
       </div>

@@ -7,6 +7,9 @@ interface NavbarProps {
   isAuthenticated: boolean;
   userEmail: string;
   onLogout: () => void;
+  lang: "es" | "en";
+  setLang: (lang: "es" | "en") => void;
+  t: any;
 }
 
 export function Navbar({
@@ -15,6 +18,9 @@ export function Navbar({
   isAuthenticated,
   userEmail,
   onLogout,
+  lang,
+  setLang,
+  t,
 }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -35,11 +41,11 @@ export function Navbar({
   }, []);
 
   const navLinks = [
-    { label: "Inicio", target: "hero" },
-    { label: "Nosotros", target: "about" },
-    { label: "Servicios", target: "services" },
-    { label: "Simulador", target: "calculator" },
-    { label: "Contacto", target: "contact" },
+    { label: t.nav.home, target: "hero" },
+    { label: t.nav.about, target: "about" },
+    { label: t.nav.services, target: "services" },
+    { label: t.nav.calculator, target: "calculator" },
+    { label: t.nav.contact, target: "contact" },
   ];
 
   return (
@@ -72,7 +78,7 @@ export function Navbar({
                 PROSERCO
               </span>
               <span className="text-[9px] font-sans text-gold-400/70 tracking-[0.2em] font-semibold mt-1">
-                CONTADORES PÚBLICOS
+                {t.footer.logoSubtitle}
               </span>
             </div>
           </button>
@@ -94,18 +100,27 @@ export function Navbar({
             </ul>
           )}
 
-          {/* Desktop Auth and CTA */}
+          {/* Desktop Auth, Language Selector and CTA */}
           <div className="hidden lg:flex items-center gap-4">
+            {/* Language Toggle */}
+            <button
+              onClick={() => setLang(lang === "es" ? "en" : "es")}
+              className="px-2.5 py-1.5 border border-gold-500/20 hover:border-gold-500/50 rounded-lg text-xs font-sans font-bold text-gold-400 hover:text-white transition-all duration-300 flex items-center gap-1 cursor-pointer bg-white/[0.01]"
+              title={lang === "es" ? "Switch to English" : "Cambiar a Español"}
+            >
+              <span>{lang === "es" ? "EN" : "ES"}</span>
+            </button>
+
             {isAuthenticated ? (
               <div className="flex items-center gap-4">
                 <span className="text-xs font-sans text-navy-200/60">
-                  Sesión: <strong className="text-gold-400">{userEmail.split("@")[0]}</strong>
+                  {t.nav.session}: <strong className="text-gold-400">{userEmail.split("@")[0]}</strong>
                 </span>
                 <button
                   onClick={onLogout}
                   className="px-4 py-2 border border-rose-500/20 hover:border-rose-500/50 text-rose-400 hover:text-white hover:bg-rose-500/10 text-xs font-bold rounded-lg transition-all duration-300 cursor-pointer"
                 >
-                  Salir
+                  {t.nav.logout}
                 </button>
               </div>
             ) : (
@@ -114,13 +129,13 @@ export function Navbar({
                   onClick={onOpenLogin}
                   className="text-sm font-sans font-semibold text-white hover:text-gold-400 px-4 py-2 hover:bg-white/[0.02] rounded-lg transition-all duration-300 cursor-pointer"
                 >
-                  Portal Cliente
+                  {t.common.clientPortal}
                 </button>
                 <button
                   onClick={() => scrollToSection("contact")}
                   className="btn-gold px-5 py-2.5 text-navy-950 font-sans font-bold text-sm rounded shadow-lg shadow-gold-500/10 cursor-pointer"
                 >
-                  Consulta Gratuita
+                  {t.common.freeConsultation}
                 </button>
               </>
             )}
@@ -197,7 +212,7 @@ export function Navbar({
               className="transition-all duration-500"
             >
               <span className="text-xl font-sans text-navy-200/60 block mb-2">
-                Conectado como:
+                {t.nav.session}:
               </span>
               <span className="text-2xl font-serif font-bold text-gold-400 block">
                 {userEmail}
@@ -214,6 +229,14 @@ export function Navbar({
           }}
           className="transition-all duration-500 flex flex-col gap-4 w-full max-w-[240px]"
         >
+          {/* Mobile Language Selector */}
+          <button
+            onClick={() => setLang(lang === "es" ? "en" : "es")}
+            className="w-full py-2.5 border border-gold-500/20 text-gold-400 font-sans font-semibold rounded-xl hover:bg-white/[0.03] transition-colors text-center cursor-pointer flex items-center justify-center gap-2"
+          >
+            <span>{lang === "es" ? "English (EN)" : "Español (ES)"}</span>
+          </button>
+
           {isAuthenticated ? (
             <button
               onClick={() => {
@@ -222,7 +245,7 @@ export function Navbar({
               }}
               className="w-full py-3.5 border border-rose-500/20 text-rose-400 font-sans font-bold rounded-xl hover:bg-rose-500/10 transition-colors text-center cursor-pointer"
             >
-              Cerrar Sesión
+              {t.nav.logout}
             </button>
           ) : (
             <>
@@ -233,7 +256,7 @@ export function Navbar({
                 }}
                 className="w-full py-3 border border-white/15 text-white font-sans font-semibold rounded-xl hover:bg-white/[0.03] transition-colors text-center cursor-pointer"
               >
-                Portal Cliente
+                {t.common.clientPortal}
               </button>
               <button
                 onClick={() => {
@@ -242,7 +265,7 @@ export function Navbar({
                 }}
                 className="w-full py-3.5 btn-gold font-sans font-bold rounded-xl text-center cursor-pointer"
               >
-                Consulta Gratuita
+                {t.common.freeConsultation}
               </button>
             </>
           )}

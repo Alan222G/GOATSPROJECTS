@@ -1,45 +1,19 @@
 import { useState, useEffect } from "react";
 import { ScrollReveal } from "./ScrollReveal";
 
-interface Testimonial {
-  quote: string;
-  author: string;
-  role: string;
-  company: string;
-  rating: number;
+interface TestimonialsProps {
+  t: any;
 }
 
-export function Testimonials() {
+export function Testimonials({ t }: TestimonialsProps) {
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const testimonials: Testimonial[] = [
-    {
-      quote: "La precisión e integridad de PROSERCO nos permitió superar con total éxito una fiscalización compleja del SII. Son socios estratégicos indispensables para el resguardo de nuestro patrimonio corporativo.",
-      author: "Roberto Silva",
-      role: "Gerente de Finanzas",
-      company: "Logística Andes S.A.",
-      rating: 5,
-    },
-    {
-      quote: "Migrar nuestra gestión contable a la nube de la mano de PROSERCO redujo a la mitad los tiempos de conciliación y nos brindó reportes consolidados oportunos para la toma de decisiones directivas.",
-      author: "Carolina Méndez",
-      role: "Directora Financiera",
-      company: "TecnoCorp Chile",
-      rating: 5,
-    },
-    {
-      quote: "Excelente acompañamiento técnico en nuestro proceso de fusión corporativa y reestructuración tributaria familiar. Profesionalismo del más alto nivel y cercanía en el trato diario.",
-      author: "Andrés Valdivia",
-      role: "Socio Principal",
-      company: "Inversiones V&M",
-      rating: 5,
-    },
-  ];
+  const testimonials = t.testimonials.list;
 
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % testimonials.length);
-    }, 8000); // Shift every 8 seconds
+    }, 8000);
     return () => clearInterval(interval);
   }, [testimonials.length]);
 
@@ -53,12 +27,12 @@ export function Testimonials() {
         <div className="mb-16">
           <ScrollReveal delay={100} direction="down">
             <span className="text-gold-500 text-xs font-semibold tracking-[0.25em] uppercase">
-              Opiniones de Líderes
+              {t.testimonials.tag}
             </span>
           </ScrollReveal>
           <ScrollReveal delay={200} direction="up">
             <h2 className="font-serif text-3xl md:text-5xl font-bold text-white mt-3">
-              Casos de Éxito
+              {t.testimonials.title}
             </h2>
           </ScrollReveal>
           <ScrollReveal delay={300} direction="up">
@@ -78,7 +52,7 @@ export function Testimonials() {
 
             {/* Testimonials List */}
             <div className="min-h-[220px] flex items-center justify-center">
-              {testimonials.map((testimonial, idx) => (
+              {testimonials.map((testimonial: any, idx: number) => (
                 <div
                   key={idx}
                   className={`transition-all duration-700 ease-in-out absolute inset-x-6 sm:inset-x-14 ${
@@ -89,7 +63,7 @@ export function Testimonials() {
                 >
                   {/* Stars */}
                   <div className="flex justify-center gap-1.5 mb-6">
-                    {Array.from({ length: testimonial.rating }).map((_, sIdx) => (
+                    {Array.from({ length: 5 }).map((_, sIdx) => (
                       <svg key={sIdx} className="w-5 h-5 text-gold-400 fill-current" viewBox="0 0 20 20">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                       </svg>
@@ -116,7 +90,7 @@ export function Testimonials() {
 
             {/* Slider Dots */}
             <div className="flex justify-center gap-3 mt-10">
-              {testimonials.map((_, idx) => (
+              {testimonials.map((_: any, idx: number) => (
                 <button
                   key={idx}
                   onClick={() => setActiveIndex(idx)}
@@ -125,7 +99,7 @@ export function Testimonials() {
                       ? "bg-gold-500 w-6"
                       : "bg-white/10 hover:bg-white/30"
                   }`}
-                  aria-label={`Ir al testimonio ${idx + 1}`}
+                  aria-label={`Testimonial ${idx + 1}`}
                 />
               ))}
             </div>

@@ -9,11 +9,15 @@ import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
 import { LoginModal } from "@/components/LoginModal";
 import { ClientDashboard } from "@/components/ClientDashboard";
+import { translations } from "@/utils/translations";
 
 export function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userEmail, setUserEmail] = useState("");
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [lang, setLang] = useState<"es" | "en">("es");
+
+  const t = translations[lang];
 
   // Smooth scroll helper
   const scrollToSection = (id: string) => {
@@ -52,6 +56,9 @@ export function App() {
           setIsAuthenticated(false);
           setUserEmail("");
         }}
+        lang={lang}
+        setLang={setLang}
+        t={t}
       />
 
       {/* Main Content Conditional Render */}
@@ -62,31 +69,32 @@ export function App() {
             setIsAuthenticated(false);
             setUserEmail("");
           }}
+          t={t}
         />
       ) : (
         <main>
           {/* Hero Section */}
-          <Hero scrollToSection={scrollToSection} />
+          <Hero scrollToSection={scrollToSection} t={t} />
 
           {/* About Section */}
-          <About />
+          <About t={t} />
 
           {/* Services Section */}
-          <Services />
+          <Services t={t} />
 
           {/* Tax & Health Calculator Widget */}
-          <Calculator />
+          <Calculator t={t} />
 
           {/* Testimonials */}
-          <Testimonials />
+          <Testimonials t={t} />
 
           {/* Contact Form & Office Details */}
-          <Contact />
+          <Contact t={t} />
         </main>
       )}
 
       {/* Footer */}
-      <Footer scrollToSection={scrollToSection} />
+      <Footer scrollToSection={scrollToSection} t={t} />
 
       {/* Login Modal Overlay */}
       <LoginModal
@@ -96,6 +104,7 @@ export function App() {
           setIsAuthenticated(true);
           setUserEmail(email);
         }}
+        t={t}
       />
     </div>
   );

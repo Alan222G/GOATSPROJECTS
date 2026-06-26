@@ -1,58 +1,40 @@
 import { useState } from "react";
 import { ScrollReveal } from "./ScrollReveal";
 
-export function Calculator() {
+interface CalculatorProps {
+  t: any;
+}
+
+export function Calculator({ t }: CalculatorProps) {
   const [activeTab, setActiveTab] = useState<"tax" | "health">("tax");
 
-  // --- TAB 1: TAX CALCULATOR STATES & LOGIC ---
-  const [monthlySalary, setMonthlySalary] = useState<number>(2500000); // Default 2.5M CLP
-  const utmValue = 66200; // Simulated UTM value for 2026
+  // --- TAB 1: GUATEMALAN ISR CALCULATOR STATES & LOGIC (QUETZALES) ---
+  const [monthlyIncome, setMonthlyIncome] = useState<number>(35000); // Default Q35k
 
-  const calculateTax = (salary: number) => {
-    const salaryInUtm = salary / utmValue;
-    let taxRate = 0;
-    let deductionUtm = 0;
+  const calculateIsrTax = (income: number) => {
+    let tax = 0;
+    let marginalRate = 0;
 
-    if (salaryInUtm <= 13.5) {
-      taxRate = 0;
-      deductionUtm = 0;
-    } else if (salaryInUtm <= 30) {
-      taxRate = 0.04;
-      deductionUtm = 0.54;
-    } else if (salaryInUtm <= 50) {
-      taxRate = 0.08;
-      deductionUtm = 1.74;
-    } else if (salaryInUtm <= 70) {
-      taxRate = 0.135;
-      deductionUtm = 4.49;
-    } else if (salaryInUtm <= 90) {
-      taxRate = 0.23;
-      deductionUtm = 11.14;
-    } else if (salaryInUtm <= 120) {
-      taxRate = 0.304;
-      deductionUtm = 17.8;
-    } else if (salaryInUtm <= 310) {
-      taxRate = 0.35;
-      deductionUtm = 23.32;
+    if (income <= 30000) {
+      tax = income * 0.05;
+      marginalRate = 5;
     } else {
-      taxRate = 0.4;
-      deductionUtm = 38.82;
+      tax = 1500 + (income - 30000) * 0.07;
+      marginalRate = 7;
     }
 
-    const calculatedTaxClp = Math.max(0, (salaryInUtm * taxRate - deductionUtm) * utmValue);
-    const netIncomeClp = salary - calculatedTaxClp;
-    const effectiveRate = salary > 0 ? (calculatedTaxClp / salary) * 100 : 0;
+    const netIncome = income - tax;
+    const effectiveRate = income > 0 ? (tax / income) * 100 : 0;
 
     return {
-      tax: Math.round(calculatedTaxClp),
-      net: Math.round(netIncomeClp),
-      marginalRate: taxRate * 100,
+      tax: Math.round(tax),
+      net: Math.round(netIncome),
+      marginalRate,
       effectiveRate: parseFloat(effectiveRate.toFixed(1)),
-      utm: parseFloat(salaryInUtm.toFixed(2)),
     };
   };
 
-  const taxResults = calculateTax(monthlySalary);
+  const taxResults = calculateIsrTax(monthlyIncome);
 
   // --- TAB 2: FINANCIAL HEALTH STATES & LOGIC ---
   const [answers, setAnswers] = useState<Record<number, number>>({
@@ -64,54 +46,6 @@ export function Calculator() {
   });
   const [showResult, setShowResult] = useState(false);
 
-  const questions = [
-    {
-      id: 1,
-      text: "¿Su empresa realiza conciliación bancaria al día de forma mensual?",
-      options: [
-        { text: "Sí, siempre al cierre de mes", score: 20 },
-        { text: "A veces, o con desfase de meses", score: 10 },
-        { text: "No, solo al final del año tributario", score: 0 },
-      ],
-    },
-    {
-      id: 2,
-      text: "¿Realiza planificación tributaria estratégica antes del cierre del año fiscal?",
-      options: [
-        { text: "Sí, evaluamos regímenes y optimizaciones de forma planificada", score: 20 },
-        { text: "A veces realizamos ajustes de última hora", score: 10 },
-        { text: "No, pagamos los impuestos resultantes sin planificación previa", score: 0 },
-      ],
-    },
-    {
-      id: 3,
-      text: "¿Tiene claridad de su flujo de caja proyectado a un horizonte de 3 meses?",
-      options: [
-        { text: "Sí, tenemos modelos y escenarios de proyección", score: 20 },
-        { text: "Parcialmente, solo controlamos el saldo bancario inmediato", score: 10 },
-        { text: "No, operamos al día sin proyecciones", score: 0 },
-      ],
-    },
-    {
-      id: 4,
-      text: "¿Cuenta con Estados Financieros mensuales entregados por su área contable?",
-      options: [
-        { text: "Sí, recibimos balances analizados los primeros 10 días del mes", score: 20 },
-        { text: "Recibimos informes esporádicamente o sin análisis", score: 10 },
-        { text: "No, la contabilidad solo sirve para liquidar impuestos anuales", score: 0 },
-      ],
-    },
-    {
-      id: 5,
-      text: "¿Su documentación de respaldo contable está digitalizada e integrada en la nube?",
-      options: [
-        { text: "Sí, 100% digital y accesible desde cualquier lugar", score: 20 },
-        { text: "En proceso, mezclamos digital con carpetas físicas", score: 10 },
-        { text: "No, todo es físico y archivado de manera tradicional", score: 0 },
-      ],
-    },
-  ];
-
   const handleSelectAnswer = (qId: number, score: number) => {
     setAnswers((prev) => ({ ...prev, [qId]: score }));
   };
@@ -119,19 +53,38 @@ export function Calculator() {
   const totalScore = Object.values(answers).reduce((acc, curr) => acc + curr, 0);
 
   const getHealthStatus = (score: number) => {
-    if (score >= 80) return { title: "Excelente", color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20", desc: "Su gestión financiera y tributaria cuenta con sólidos estándares. Cumple con los pilares estratégicos de orden contable." };
-    if (score >= 50) return { title: "Vulnerable", color: "text-amber-400", bg: "bg-amber-500/10 border-amber-500/20", desc: "Su empresa opera pero tiene brechas críticas que podrían desencadenar multas tributarias u oportunidades de ahorro fiscal perdidas." };
-    return { title: "Crítica", color: "text-rose-400", bg: "bg-rose-500/10 border-rose-500/20", desc: "Se detectan severas deficiencias de control. Riesgo latente de auditorías del SII, problemas de caja o asimetrías de información contable urgente." };
+    if (score >= 80) {
+      return {
+        title: t.calculator.healthStatus.excellent.title,
+        color: "text-emerald-400",
+        bg: "bg-emerald-500/10 border-emerald-500/20",
+        desc: t.calculator.healthStatus.excellent.desc,
+      };
+    }
+    if (score >= 50) {
+      return {
+        title: t.calculator.healthStatus.vulnerable.title,
+        color: "text-amber-400",
+        bg: "bg-amber-500/10 border-amber-500/20",
+        desc: t.calculator.healthStatus.vulnerable.desc,
+      };
+    }
+    return {
+      title: t.calculator.healthStatus.critical.title,
+      color: "text-rose-400",
+      bg: "bg-rose-500/10 border-rose-500/20",
+      desc: t.calculator.healthStatus.critical.desc,
+    };
   };
 
   const healthStatus = getHealthStatus(totalScore);
 
   const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat("es-CL", {
+    return new Intl.NumberFormat("es-GT", {
       style: "currency",
-      currency: "CLP",
+      currency: "GTQ",
       minimumFractionDigits: 0,
-    }).format(val);
+    }).format(val).replace("GTQ", "Q");
   };
 
   return (
@@ -145,12 +98,12 @@ export function Calculator() {
         <div className="text-center mb-16">
           <ScrollReveal delay={100} direction="down">
             <span className="text-gold-500 text-xs font-semibold tracking-[0.25em] uppercase">
-              Asistente Interactivo
+              {t.calculator.tag}
             </span>
           </ScrollReveal>
           <ScrollReveal delay={200} direction="up">
             <h2 className="font-serif text-3xl md:text-5xl font-bold text-white mt-3">
-              Herramientas Inteligentes
+              {t.calculator.title}
             </h2>
           </ScrollReveal>
           <ScrollReveal delay={300} direction="up">
@@ -172,7 +125,7 @@ export function Calculator() {
                   : "text-navy-200/60 hover:text-white"
               }`}
             >
-              Simulador Tributario
+              {t.calculator.tab1}
             </button>
             <button
               onClick={() => setActiveTab("health")}
@@ -182,7 +135,7 @@ export function Calculator() {
                   : "text-navy-200/60 hover:text-white"
               }`}
             >
-              Diagnóstico Financiero
+              {t.calculator.tab2}
             </button>
           </div>
         </div>
@@ -197,49 +150,48 @@ export function Calculator() {
                 <div className="lg:col-span-7 space-y-8">
                   <div>
                     <h3 className="font-serif text-2xl sm:text-3xl font-bold text-white mb-3">
-                      Simulador de Impuesto Único
+                      {t.calculator.taxTitle}
                     </h3>
                     <p className="font-sans text-navy-200/60 text-sm leading-relaxed">
-                      Calcula una estimación mensual del Impuesto Único de Segunda Categoría para trabajadores dependientes en base al valor actual de la UTM (~{formatCurrency(utmValue)}).
+                      {t.calculator.taxDesc}
                     </p>
                   </div>
 
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
                       <label htmlFor="salary-range" className="text-sm font-sans font-semibold text-white/90">
-                        Sueldo Tributable Mensual (CLP)
+                        {t.calculator.salaryLabel}
                       </label>
                       <span className="font-serif text-xl sm:text-2xl font-bold text-gold-400">
-                        {formatCurrency(monthlySalary)}
+                        {formatCurrency(monthlyIncome)}
                       </span>
                     </div>
 
                     <input
                       id="salary-range"
                       type="range"
-                      min="500000"
-                      max="12000000"
-                      step="50000"
-                      value={monthlySalary}
-                      onChange={(e) => setMonthlySalary(parseInt(e.target.value))}
+                      min="5000"
+                      max="150000"
+                      step="1000"
+                      value={monthlyIncome}
+                      onChange={(e) => setMonthlyIncome(parseInt(e.target.value))}
                       className="w-full h-2 bg-navy-900 border border-white/5 rounded-lg appearance-none cursor-pointer accent-gold-500"
                     />
                     <div className="flex justify-between text-[10px] font-sans text-navy-200/40">
-                      <span>$500 mil</span>
-                      <span>$3.0 mill.</span>
-                      <span>$6.0 mill.</span>
-                      <span>$9.0 mill.</span>
-                      <span>$12.0 mill.</span>
+                      <span>{t.calculator.rangeMin}</span>
+                      <span>Q 50k</span>
+                      <span>Q 100k</span>
+                      <span>{t.calculator.rangeMax}</span>
                     </div>
                   </div>
 
-                  {/* UTM Reference */}
+                  {/* Reference */}
                   <div className="p-4 bg-white/[0.02] border border-white/5 rounded-xl text-xs font-sans text-navy-200/50 leading-relaxed flex gap-3 items-center">
                     <svg className="w-5 h-5 text-gold-500/70 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <span>
-                      * El cálculo se basa en el tramo tributario del SII de Chile aplicando descuentos y factores de deducción en UTM. No considera cotizaciones obligatorias de AFP ni Salud, por lo que debe ingresar su sueldo imponible líquido legal.
+                      {t.calculator.taxReference}
                     </span>
                   </div>
                 </div>
@@ -247,33 +199,33 @@ export function Calculator() {
                 {/* Outputs Panel */}
                 <div className="lg:col-span-5 bg-navy-950/60 border border-gold-500/20 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl shadow-navy-950/30">
                   <h4 className="text-xs font-sans text-white/55 font-bold uppercase tracking-wider border-b border-white/5 pb-3">
-                    Resultados Estimados
+                    {t.calculator.resultsTitle}
                   </h4>
 
                   <div className="space-y-4">
-                    {/* Imponible UTM */}
+                    {/* Gross Income */}
                     <div className="flex justify-between items-center text-sm font-sans text-navy-200/60">
-                      <span>Equivalente imponible</span>
-                      <span className="text-white font-medium">{taxResults.utm} UTM</span>
+                      <span>{t.calculator.resIncome}</span>
+                      <span className="text-white font-medium">{formatCurrency(monthlyIncome)}</span>
                     </div>
 
-                    {/* Tasa Marginal */}
+                    {/* Marginal Rate */}
                     <div className="flex justify-between items-center text-sm font-sans text-navy-200/60">
-                      <span>Tasa marginal del tramo</span>
+                      <span>{t.calculator.resTaxRate}</span>
                       <span className="text-white font-medium">{taxResults.marginalRate}%</span>
                     </div>
 
-                    {/* Tasa Efectiva */}
+                    {/* Effective Rate */}
                     <div className="flex justify-between items-center text-sm font-sans text-navy-200/60">
-                      <span>Tasa efectiva total</span>
+                      <span>{t.calculator.resEffectiveRate}</span>
                       <span className="text-gold-400 font-semibold">{taxResults.effectiveRate}%</span>
                     </div>
 
                     <div className="border-t border-white/5 pt-4 my-2" />
 
-                    {/* Impuesto CLP */}
+                    {/* Tax CLP */}
                     <div className="flex justify-between items-center">
-                      <span className="text-sm font-sans text-navy-200/80">Impuesto a Pagar</span>
+                      <span className="text-sm font-sans text-navy-200/80">{t.calculator.resTaxPayable}</span>
                       <span className="font-serif text-lg sm:text-xl font-bold text-rose-400">
                         {formatCurrency(taxResults.tax)}
                       </span>
@@ -281,7 +233,7 @@ export function Calculator() {
 
                     {/* Sueldo Neto CLP */}
                     <div className="flex justify-between items-center">
-                      <span className="text-sm font-sans text-navy-200/85">Sueldo Neto Líquido</span>
+                      <span className="text-sm font-sans text-navy-200/85">{t.calculator.resNet}</span>
                       <span className="font-serif text-2xl sm:text-3xl font-extrabold text-emerald-400">
                         {formatCurrency(taxResults.net)}
                       </span>
@@ -291,9 +243,9 @@ export function Calculator() {
                   <div className="pt-4">
                     <a
                       href="#contact"
-                      className="block w-full text-center py-3 btn-gold rounded-xl font-sans font-bold text-xs sm:text-sm"
+                      className="block w-full text-center py-3 btn-gold rounded-xl font-sans font-bold text-xs sm:text-sm cursor-pointer"
                     >
-                      Planificar mi Declaración Anual
+                      {t.calculator.btnPlan}
                     </a>
                   </div>
                 </div>
@@ -305,23 +257,24 @@ export function Calculator() {
                   <div className="space-y-8">
                     <div>
                       <h3 className="font-serif text-2xl sm:text-3xl font-bold text-white mb-2">
-                        Autoevaluación de Salud Contable y Financiera
+                        {t.calculator.healthTitle}
                       </h3>
                       <p className="font-sans text-navy-200/60 text-sm max-w-2xl">
-                        Responda estas 5 preguntas rápidas para diagnosticar el nivel de riesgo de su gestión financiera actual y obtener recomendaciones de nuestros expertos.
+                        {t.calculator.healthDesc}
                       </p>
                     </div>
 
                     <div className="space-y-6">
-                      {questions.map((q) => (
+                      {t.calculator.questions.map((q: any) => (
                         <div key={q.id} className="p-5 bg-white/[0.01] border border-white/5 rounded-xl">
                           <h4 className="font-serif text-base sm:text-lg font-bold text-white mb-4">
                             {q.id}. {q.text}
                           </h4>
                           <div className="grid sm:grid-cols-3 gap-4">
-                            {q.options.map((opt, oIdx) => (
+                            {q.options.map((opt: any, oIdx: number) => (
                               <button
                                 key={oIdx}
+                                type="button"
                                 onClick={() => handleSelectAnswer(q.id, opt.score)}
                                 className={`p-3.5 rounded-lg border text-xs sm:text-sm font-sans font-semibold text-left transition-all duration-300 cursor-pointer ${
                                   answers[q.id] === opt.score
@@ -342,7 +295,7 @@ export function Calculator() {
                         onClick={() => setShowResult(true)}
                         className="px-8 py-3.5 btn-gold rounded-xl font-sans font-bold text-sm sm:text-base cursor-pointer"
                       >
-                        Calcular Diagnóstico
+                        {t.calculator.btnCalculate}
                       </button>
                     </div>
                   </div>
@@ -352,10 +305,10 @@ export function Calculator() {
                     <div className="lg:col-span-6 space-y-6">
                       <div>
                         <span className="text-xs font-sans text-gold-400 font-bold uppercase tracking-wider">
-                          Diagnóstico Contable
+                          {t.calculator.diagTitle}
                         </span>
                         <h3 className="font-serif text-3xl font-bold text-white mt-1">
-                          Tu Nivel de Salud es{" "}
+                          {t.calculator.diagLevelText}{" "}
                           <span className={healthStatus.color}>{healthStatus.title}</span>
                         </h3>
                       </div>
@@ -369,13 +322,13 @@ export function Calculator() {
                           onClick={() => setShowResult(false)}
                           className="px-5 py-2.5 border border-white/10 hover:border-white/20 text-white font-sans text-xs sm:text-sm font-semibold rounded hover:bg-white/[0.02] cursor-pointer"
                         >
-                          Reiniciar Test
+                          {t.calculator.btnReset}
                         </button>
                         <a
                           href="#contact"
                           className="px-6 py-2.5 btn-gold rounded-xl font-sans text-xs sm:text-sm font-bold text-center"
                         >
-                          Conversar sobre mi diagnóstico
+                          {t.calculator.btnDiscuss}
                         </a>
                       </div>
                     </div>
@@ -394,15 +347,15 @@ export function Calculator() {
                             {totalScore}%
                           </span>
                           <span className="text-[10px] font-sans text-navy-200/40 uppercase tracking-widest font-bold mt-1">
-                            Puntaje Contable
+                            {t.calculator.scoreLabel}
                           </span>
                         </div>
                       </div>
 
                       <div className="w-full max-w-sm space-y-3">
                         <div className="flex justify-between text-xs font-sans text-navy-200/50">
-                          <span>0% Riesgo Extremo</span>
-                          <span>100% Cumplimiento</span>
+                          <span>{t.calculator.scoreScaleMin}</span>
+                          <span>{t.calculator.scoreScaleMax}</span>
                         </div>
                         <div className="h-1.5 w-full bg-white/[0.03] border border-white/5 rounded-full overflow-hidden">
                           <div

@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { ScrollReveal } from "./ScrollReveal";
 
-export function Contact() {
+interface ContactProps {
+  t: any;
+}
+
+export function Contact({ t }: ContactProps) {
   const [step, setStep] = useState(1);
   const [profile, setProfile] = useState<"empresa" | "persona" | "">("");
   const [serviceNeeded, setServiceNeeded] = useState("");
@@ -19,13 +23,13 @@ export function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Dynamic Pre-filled Links
-  const mailSubject = encodeURIComponent("Consulta Corporativa PROSERCO");
+  // Dynamic Pre-filled Links (Updated for Guatemala office & mail details)
+  const mailSubject = encodeURIComponent(t.contact.tag);
   const mailBody = encodeURIComponent("Estimado equipo de PROSERCO,\n\nMe pongo en contacto con ustedes a través de su sitio web para solicitar más detalles sobre sus servicios corporativos.\n\nAtentamente,\n[Su Nombre]");
   const gmailUrl = `mailto:contacto@proserco.com?subject=${mailSubject}&body=${mailBody}`;
 
   const waMessage = encodeURIComponent("Hola PROSERCO, vengo de su sitio web y me gustaría programar una sesión inicial de diagnóstico gratuito para nuestra empresa.");
-  const whatsappUrl = `https://wa.me/56934567890?text=${waMessage}`;
+  const whatsappUrl = `https://wa.me/50255481234?text=${waMessage}`; // Updated mobile code for Guatemala (+502)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -38,19 +42,20 @@ export function Contact() {
     const errors = { name: "", email: "", phone: "" };
 
     if (formData.name.trim().length < 3) {
-      errors.name = "El nombre debe tener al menos 3 caracteres";
+      errors.name = t.contact.errors.name;
       valid = false;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
-      errors.email = "Ingrese un correo electrónico válido";
+      errors.email = t.contact.errors.email;
       valid = false;
     }
 
+    // Guatemalan phone checks (8 digits)
     const phoneDigits = formData.phone.replace(/\D/g, "");
     if (phoneDigits.length < 8) {
-      errors.phone = "Ingrese un número telefónico de contacto válido";
+      errors.phone = t.contact.errors.phone;
       valid = false;
     }
 
@@ -92,12 +97,12 @@ export function Contact() {
         <div className="text-center mb-20">
           <ScrollReveal delay={100} direction="down">
             <span className="text-gold-500 text-xs font-semibold tracking-[0.25em] uppercase">
-              Hablemos
+              {t.contact.tag}
             </span>
           </ScrollReveal>
           <ScrollReveal delay={200} direction="up">
             <h2 className="font-serif text-3xl md:text-5xl font-bold text-white mt-3">
-              Inicia tu Asesoría de Élite
+              {t.contact.title}
             </h2>
           </ScrollReveal>
           <ScrollReveal delay={300} direction="up">
@@ -110,10 +115,10 @@ export function Contact() {
           <div className="lg:col-span-5 space-y-8">
             <ScrollReveal delay={200} direction="left">
               <h3 className="font-serif text-2xl md:text-3xl font-bold text-white mb-6">
-                Canales de Atención Directa
+                {t.contact.subtitle}
               </h3>
               <p className="font-sans text-navy-200/60 text-sm sm:text-base leading-relaxed mb-8">
-                Haz clic en los íconos para comunicarte directamente con nuestro equipo tributario mediante tu aplicación preferida (WhatsApp o Correo Seguro).
+                {t.contact.desc}
               </p>
 
               <div className="space-y-6">
@@ -129,13 +134,13 @@ export function Contact() {
                   </div>
                   <div>
                     <span className="block text-[10px] font-sans text-navy-200/40 uppercase tracking-widest font-bold mb-1">
-                      Enviar Correo Electrónico
+                      {t.contact.channelEmail}
                     </span>
                     <span className="text-white group-hover:text-gold-400 transition-colors font-sans font-semibold text-sm sm:text-base">
                       contacto@proserco.com
                     </span>
                     <span className="block text-[11px] text-navy-200/30 font-sans mt-0.5">
-                      Abrir cliente de correo o Gmail
+                      {t.contact.channelEmailSub}
                     </span>
                   </div>
                 </a>
@@ -154,13 +159,13 @@ export function Contact() {
                   </div>
                   <div>
                     <span className="block text-[10px] font-sans text-navy-200/40 uppercase tracking-widest font-bold mb-1">
-                      Iniciar Chat en WhatsApp
+                      {t.contact.channelWa}
                     </span>
                     <span className="text-white group-hover:text-gold-400 transition-colors font-sans font-semibold text-sm sm:text-base">
-                      +56 9 3456 7890
+                      +502 5548 1234
                     </span>
                     <span className="block text-[11px] text-navy-200/30 font-sans mt-0.5">
-                      Mensaje pre-escrito listo
+                      {t.contact.channelWaSub}
                     </span>
                   </div>
                 </a>
@@ -175,10 +180,10 @@ export function Contact() {
                   </div>
                   <div>
                     <span className="block text-[10px] font-sans text-navy-200/40 uppercase tracking-widest font-bold mb-1">
-                      Oficina Central
+                      {t.contact.officeTitle}
                     </span>
                     <span className="text-white font-sans font-semibold text-sm sm:text-base">
-                      Av. Apoquindo 3400, Las Condes. Santiago, Chile.
+                      {t.contact.officeDesc}
                     </span>
                   </div>
                 </div>
@@ -200,10 +205,13 @@ export function Contact() {
                       </svg>
                     </div>
                     <h3 className="font-serif text-2xl sm:text-3xl font-bold text-white mb-4">
-                      ¡Consulta Recibida!
+                      {t.contact.successTitle}
                     </h3>
                     <p className="font-sans text-navy-200/60 text-sm sm:text-base max-w-md mx-auto leading-relaxed">
-                      Muchas gracias, <strong>{formData.name}</strong>. Un consultor senior de PROSERCO revisará tu solicitud de <strong>{serviceNeeded}</strong> y te contactará a <strong>{formData.email}</strong> en un lapso de 2 horas hábiles.
+                      {t.contact.successDesc
+                        .replace("{name}", formData.name)
+                        .replace("{service}", serviceNeeded)
+                        .replace("{email}", formData.email)}
                     </p>
                     <button
                       onClick={() => {
@@ -215,7 +223,7 @@ export function Contact() {
                       }}
                       className="mt-8 px-6 py-2.5 border border-white/10 hover:border-gold-500/30 text-white hover:text-gold-400 font-sans text-xs sm:text-sm font-semibold rounded cursor-pointer"
                     >
-                      Enviar otra Consulta
+                      {t.contact.btnNewConsult}
                     </button>
                   </div>
                 ) : (
@@ -226,10 +234,10 @@ export function Contact() {
                     <div className="mb-8 flex justify-between items-center border-b border-white/5 pb-4">
                       <div>
                         <span className="text-xs font-sans text-gold-400 font-bold uppercase tracking-wider block">
-                          Paso {step} de 2
+                          {t.contact.stepLabel.replace("{step}", step.toString())}
                         </span>
                         <h4 className="font-serif text-lg font-bold text-white mt-0.5">
-                          {step === 1 ? "Requerimientos Iniciales" : "Detalles de Contacto"}
+                          {step === 1 ? t.contact.stepTitle1 : t.contact.stepTitle2}
                         </h4>
                       </div>
                       <div className="flex gap-1">
@@ -244,7 +252,7 @@ export function Contact() {
                         {/* Profile selector */}
                         <div>
                           <label className="block text-xs font-sans text-white/55 font-bold uppercase tracking-wider mb-3">
-                            1. ¿A quién representa?
+                            {t.contact.q1Label}
                           </label>
                           <div className="grid sm:grid-cols-2 gap-4">
                             <button
@@ -256,8 +264,8 @@ export function Contact() {
                                   : "bg-navy-950/40 border-white/5 text-navy-200/50 hover:border-white/20 hover:text-white"
                               }`}
                             >
-                              <span className="block text-sm sm:text-base text-white">Empresa</span>
-                              <span className="block text-[10px] font-normal text-navy-200/50 mt-1">Persona Jurídica o Startup</span>
+                              <span className="block text-sm sm:text-base text-white">{t.contact.profileOpt1}</span>
+                              <span className="block text-[10px] font-normal text-navy-200/50 mt-1">{t.contact.profileOpt1Sub}</span>
                             </button>
                             <button
                               type="button"
@@ -268,8 +276,8 @@ export function Contact() {
                                   : "bg-navy-950/40 border-white/5 text-navy-200/50 hover:border-white/20 hover:text-white"
                               }`}
                             >
-                              <span className="block text-sm sm:text-base text-white">Persona Natural</span>
-                              <span className="block text-[10px] font-normal text-navy-200/50 mt-1">Profesionales o Rentistas</span>
+                              <span className="block text-sm sm:text-base text-white">{t.contact.profileOpt2}</span>
+                              <span className="block text-[10px] font-normal text-navy-200/50 mt-1">{t.contact.profileOpt2Sub}</span>
                             </button>
                           </div>
                         </div>
@@ -277,21 +285,21 @@ export function Contact() {
                         {/* Service needed */}
                         <div>
                           <label className="block text-xs font-sans text-white/55 font-bold uppercase tracking-wider mb-3">
-                            2. Servicio de mayor interés
+                            {t.contact.q2Label}
                           </label>
                           <div className="grid grid-cols-2 gap-3">
-                            {["Auditoría", "Contabilidad", "Planificación Fiscal", "Consultoría M&A"].map((service) => (
+                            {t.services.list.map((service: any) => (
                               <button
-                                key={service}
+                                key={service.id}
                                 type="button"
-                                onClick={() => setServiceNeeded(service)}
+                                onClick={() => setServiceNeeded(service.title)}
                                 className={`p-3 rounded-lg border text-xs sm:text-sm font-sans font-semibold text-center transition-all duration-300 cursor-pointer ${
-                                  serviceNeeded === service
+                                  serviceNeeded === service.title
                                     ? "bg-gold-500/10 border-gold-500 text-gold-400"
                                     : "bg-navy-950/40 border-white/5 text-navy-200/40 hover:border-white/20 hover:text-white"
                                 }`}
                               >
-                                {service}
+                                {service.title}
                               </button>
                             ))}
                           </div>
@@ -305,7 +313,7 @@ export function Contact() {
                         {/* Name */}
                         <div>
                           <label htmlFor="name-input" className="block text-xs font-sans text-white/60 font-semibold uppercase tracking-wider mb-2">
-                            Nombre Completo
+                            {t.contact.inputName}
                           </label>
                           <input
                             id="name-input"
@@ -313,7 +321,7 @@ export function Contact() {
                             name="name"
                             value={formData.name}
                             onChange={handleInputChange}
-                            placeholder="Ej. Juan Pérez"
+                            placeholder={t.contact.inputNamePlace}
                             className={`w-full px-4 py-3 bg-navy-950/60 border rounded-xl text-white font-sans text-sm focus:outline-none focus:border-gold-500 transition-colors ${
                               formErrors.name ? "border-rose-500/60 bg-rose-500/5" : "border-white/5"
                             }`}
@@ -329,7 +337,7 @@ export function Contact() {
                           {/* Email */}
                           <div>
                             <label htmlFor="email-input" className="block text-xs font-sans text-white/60 font-semibold uppercase tracking-wider mb-2">
-                              Correo Electrónico
+                              {t.contact.inputEmail}
                             </label>
                             <input
                               id="email-input"
@@ -337,7 +345,7 @@ export function Contact() {
                               name="email"
                               value={formData.email}
                               onChange={handleInputChange}
-                              placeholder="ejemplo@correo.com"
+                              placeholder={t.contact.inputEmailPlace}
                               className={`w-full px-4 py-3 bg-navy-950/60 border rounded-xl text-white font-sans text-sm focus:outline-none focus:border-gold-500 transition-colors ${
                                 formErrors.email ? "border-rose-500/60 bg-rose-500/5" : "border-white/5"
                               }`}
@@ -352,7 +360,7 @@ export function Contact() {
                           {/* Phone */}
                           <div>
                             <label htmlFor="phone-input" className="block text-xs font-sans text-white/60 font-semibold uppercase tracking-wider mb-2">
-                              Teléfono Móvil
+                              {t.contact.inputPhone}
                             </label>
                             <input
                               id="phone-input"
@@ -360,7 +368,7 @@ export function Contact() {
                               name="phone"
                               value={formData.phone}
                               onChange={handleInputChange}
-                              placeholder="Ej. +56 9 1234 5678"
+                              placeholder={t.contact.inputPhonePlace}
                               className={`w-full px-4 py-3 bg-navy-950/60 border rounded-xl text-white font-sans text-sm focus:outline-none focus:border-gold-500 transition-colors ${
                                 formErrors.phone ? "border-rose-500/60 bg-rose-500/5" : "border-white/5"
                               }`}
@@ -376,14 +384,14 @@ export function Contact() {
                         {/* Message */}
                         <div>
                           <label htmlFor="message-input" className="block text-xs font-sans text-white/60 font-semibold uppercase tracking-wider mb-2">
-                            Coméntanos brevemente sobre tu proyecto (Opcional)
+                            {t.contact.inputMessage}
                           </label>
                           <textarea
                             id="message-input"
                             name="message"
                             value={formData.message}
                             onChange={handleInputChange}
-                            placeholder="Cuéntanos en qué podemos ayudarte..."
+                            placeholder={t.contact.inputMessagePlace}
                             rows={3}
                             className="w-full px-4 py-3 bg-navy-950/60 border border-white/5 rounded-xl text-white font-sans text-sm focus:outline-none focus:border-gold-500 transition-colors resize-none"
                           />
@@ -399,7 +407,7 @@ export function Contact() {
                           onClick={handlePrevStep}
                           className="px-6 py-3 border border-white/10 hover:border-white/20 text-white font-sans text-sm font-semibold rounded-xl hover:bg-white/[0.02] active:scale-95 transition-all duration-300 cursor-pointer"
                         >
-                          Atrás
+                          {t.contact.btnBack}
                         </button>
                       )}
 
@@ -410,7 +418,7 @@ export function Contact() {
                           disabled={!profile || !serviceNeeded}
                           className="flex-grow py-3.5 btn-gold disabled:opacity-40 disabled:hover:scale-100 disabled:pointer-events-none rounded-xl text-navy-950 font-sans font-bold text-sm sm:text-base cursor-pointer text-center"
                         >
-                          Continuar
+                          {t.contact.btnContinue}
                         </button>
                       ) : (
                         <button
@@ -424,10 +432,10 @@ export function Contact() {
                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                               </svg>
-                              <span>Procesando...</span>
+                              <span>{t.common.submitting}</span>
                             </>
                           ) : (
-                            <span>Enviar Solicitud</span>
+                            <span>{t.contact.btnSubmit}</span>
                           )}
                         </button>
                       )}
