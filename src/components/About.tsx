@@ -55,7 +55,7 @@ export function About() {
   ];
 
   return (
-    <section id="about" className="py-24 bg-gradient-to-b from-[#0b132b] to-[#0f172a] relative overflow-hidden">
+    <section id="about" className="py-24 bg-gradient-to-b from-[#050814] to-[#0b132b] relative overflow-hidden">
       {/* Background glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-navy-500/5 blur-[120px] pointer-events-none" />
 
@@ -82,7 +82,7 @@ export function About() {
         <div className="grid md:grid-cols-2 gap-8 mb-24">
           {/* Mission */}
           <ScrollReveal delay={200} direction="left">
-            <div className="glass hover:border-gold-500/25 p-8 sm:p-10 rounded-2xl transition-all duration-500 group shadow-lg hover:shadow-gold-500/5 h-full flex flex-col justify-between">
+            <div className="glow-card glass hover:border-gold-500/25 p-8 sm:p-10 rounded-2xl transition-all duration-500 group shadow-lg hover:shadow-gold-500/5 h-full flex flex-col justify-between">
               <div>
                 <div className="w-14 h-14 bg-gold-500/10 border border-gold-500/20 rounded-xl flex items-center justify-center mb-8 group-hover:scale-110 group-hover:border-gold-500/40 transition-all duration-300">
                   <svg
@@ -117,7 +117,7 @@ export function About() {
 
           {/* Vision */}
           <ScrollReveal delay={400} direction="right">
-            <div className="glass hover:border-gold-500/25 p-8 sm:p-10 rounded-2xl transition-all duration-500 group shadow-lg hover:shadow-gold-500/5 h-full flex flex-col justify-between">
+            <div className="glow-card glass hover:border-gold-500/25 p-8 sm:p-10 rounded-2xl transition-all duration-500 group shadow-lg hover:shadow-gold-500/5 h-full flex flex-col justify-between">
               <div>
                 <div className="w-14 h-14 bg-navy-500/10 border border-navy-400/20 rounded-xl flex items-center justify-center mb-8 group-hover:scale-110 group-hover:border-navy-400/40 transition-all duration-300">
                   <svg
@@ -158,7 +158,7 @@ export function About() {
 
         {/* Interactive Timeline Section */}
         <ScrollReveal delay={200} direction="up">
-          <div className="glass-light p-8 sm:p-12 rounded-3xl border border-white/5 relative overflow-hidden">
+          <div className="glow-card glass p-8 sm:p-12 rounded-3xl border border-white/5 relative overflow-hidden">
             <h3 className="font-serif text-2xl sm:text-3xl font-bold text-white mb-4 text-center">
               Nuestra Evolución
             </h3>

@@ -9,7 +9,6 @@ export function Calculator() {
   const utmValue = 66200; // Simulated UTM value for 2026
 
   const calculateTax = (salary: number) => {
-    // Convert salary to UTM
     const salaryInUtm = salary / utmValue;
     let taxRate = 0;
     let deductionUtm = 0;
@@ -136,7 +135,7 @@ export function Calculator() {
   };
 
   return (
-    <section id="calculator" className="py-24 bg-gradient-to-b from-[#0b132b] to-[#0f172a] relative overflow-hidden">
+    <section id="calculator" className="py-24 bg-gradient-to-b from-[#050814] to-[#0b132b] relative overflow-hidden">
       {/* Background glow orbs */}
       <div className="absolute top-1/2 left-0 w-96 h-96 rounded-full bg-navy-500/10 blur-[150px] pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-96 h-96 rounded-full bg-gold-500/5 blur-[120px] pointer-events-none" />
@@ -190,7 +189,7 @@ export function Calculator() {
 
         {/* Tab Contents */}
         <ScrollReveal delay={200} direction="up">
-          <div className="glass p-8 sm:p-12 rounded-3xl border border-white/5 shadow-2xl">
+          <div className="glow-card glass p-8 sm:p-12 rounded-3xl border border-white/5 shadow-2xl">
             {activeTab === "tax" ? (
               // SIMULADOR DE IMPUESTO
               <div className="grid lg:grid-cols-12 gap-12 items-center">
@@ -292,7 +291,7 @@ export function Calculator() {
                   <div className="pt-4">
                     <a
                       href="#contact"
-                      className="block w-full text-center py-3 bg-gradient-to-r from-gold-600 to-gold-400 text-navy-950 font-sans font-bold text-xs sm:text-sm rounded hover:from-gold-500 hover:to-gold-300 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+                      className="block w-full text-center py-3 btn-gold rounded-xl font-sans font-bold text-xs sm:text-sm"
                     >
                       Planificar mi Declaración Anual
                     </a>
@@ -341,7 +340,7 @@ export function Calculator() {
                     <div className="flex justify-center pt-4">
                       <button
                         onClick={() => setShowResult(true)}
-                        className="px-8 py-3.5 bg-gradient-to-r from-gold-600 to-gold-400 text-navy-950 font-sans font-bold text-sm sm:text-base rounded shadow-lg shadow-gold-500/20 hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer"
+                        className="px-8 py-3.5 btn-gold rounded-xl font-sans font-bold text-sm sm:text-base cursor-pointer"
                       >
                         Calcular Diagnóstico
                       </button>
@@ -374,7 +373,7 @@ export function Calculator() {
                         </button>
                         <a
                           href="#contact"
-                          className="px-6 py-2.5 bg-gradient-to-r from-gold-600 to-gold-400 text-navy-950 font-sans text-xs sm:text-sm font-bold rounded shadow-lg shadow-gold-500/10 hover:scale-105 transition-all duration-300"
+                          className="px-6 py-2.5 btn-gold rounded-xl font-sans text-xs sm:text-sm font-bold text-center"
                         >
                           Conversar sobre mi diagnóstico
                         </a>
@@ -384,14 +383,12 @@ export function Calculator() {
                     {/* Radial / Bar Chart representation */}
                     <div className="lg:col-span-6 flex flex-col items-center justify-center p-8 bg-navy-950/60 border border-white/5 rounded-2xl shadow-xl">
                       <div className="relative w-44 h-44 flex items-center justify-center mb-6">
-                        {/* Circular Progress (CSS driven) */}
                         <div
                           className="absolute inset-0 rounded-full border-[10px] border-white/[0.03]"
                           style={{
                             background: `conic-gradient(var(--color-gold-500) ${totalScore}%, transparent ${totalScore}%)`,
                           }}
                         />
-                        {/* Inner Circle to make it a ring */}
                         <div className="absolute w-[156px] h-[156px] rounded-full bg-navy-950 flex flex-col items-center justify-center border border-white/5">
                           <span className="text-4xl sm:text-5xl font-serif font-extrabold text-white">
                             {totalScore}%

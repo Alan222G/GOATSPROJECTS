@@ -19,11 +19,17 @@ export function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
+  // Dynamic Pre-filled Links
+  const mailSubject = encodeURIComponent("Consulta Corporativa PROSERCO");
+  const mailBody = encodeURIComponent("Estimado equipo de PROSERCO,\n\nMe pongo en contacto con ustedes a través de su sitio web para solicitar más detalles sobre sus servicios corporativos.\n\nAtentamente,\n[Su Nombre]");
+  const gmailUrl = `mailto:contacto@proserco.com?subject=${mailSubject}&body=${mailBody}`;
+
+  const waMessage = encodeURIComponent("Hola PROSERCO, vengo de su sitio web y me gustaría programar una sesión inicial de diagnóstico gratuito para nuestra empresa.");
+  const whatsappUrl = `https://wa.me/56934567890?text=${waMessage}`;
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-
-    // Reset single field error
     setFormErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
@@ -42,7 +48,6 @@ export function Contact() {
       valid = false;
     }
 
-    // Chilean phone format check or generic digits check (at least 8 numbers)
     const phoneDigits = formData.phone.replace(/\D/g, "");
     if (phoneDigits.length < 8) {
       errors.phone = "Ingrese un número telefónico de contacto válido";
@@ -54,10 +59,8 @@ export function Contact() {
   };
 
   const handleNextStep = () => {
-    if (step === 1) {
-      if (profile && serviceNeeded) {
-        setStep(2);
-      }
+    if (step === 1 && profile && serviceNeeded) {
+      setStep(2);
     }
   };
 
@@ -72,8 +75,6 @@ export function Contact() {
     if (!validateStep2()) return;
 
     setIsSubmitting(true);
-
-    // Simulate server request delay
     setTimeout(() => {
       setIsSubmitting(false);
       setIsSubmitted(true);
@@ -81,7 +82,7 @@ export function Contact() {
   };
 
   return (
-    <section id="contact" className="py-24 bg-gradient-to-b from-[#0b132b] to-[#070b19] relative overflow-hidden">
+    <section id="contact" className="py-24 bg-gradient-to-b from-[#0b132b] to-[#050814] relative overflow-hidden">
       {/* Background radial glow */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[550px] h-[550px] rounded-full bg-gold-500/5 blur-[120px] pointer-events-none" />
 
@@ -96,7 +97,7 @@ export function Contact() {
           </ScrollReveal>
           <ScrollReveal delay={200} direction="up">
             <h2 className="font-serif text-3xl md:text-5xl font-bold text-white mt-3">
-              Inicia tu Transformación
+              Inicia tu Asesoría de Élite
             </h2>
           </ScrollReveal>
           <ScrollReveal delay={300} direction="up">
@@ -109,58 +110,72 @@ export function Contact() {
           <div className="lg:col-span-5 space-y-8">
             <ScrollReveal delay={200} direction="left">
               <h3 className="font-serif text-2xl md:text-3xl font-bold text-white mb-6">
-                Contacto Corporativo
+                Canales de Atención Directa
               </h3>
               <p className="font-sans text-navy-200/60 text-sm sm:text-base leading-relaxed mb-8">
-                Agenda una sesión inicial de diagnóstico sin costo con nuestros consultores expertos para evaluar tus requerimientos fiscales y contables.
+                Haz clic en los íconos para comunicarte directamente con nuestro equipo tributario mediante tu aplicación preferida (WhatsApp o Correo Seguro).
               </p>
 
               <div className="space-y-6">
-                {/* Email detail */}
-                <div className="flex gap-4 items-start group">
-                  <div className="w-12 h-12 bg-white/[0.02] border border-white/5 group-hover:border-gold-500/30 rounded-xl flex items-center justify-center text-gold-400 group-hover:scale-105 transition-all duration-300">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {/* Email detail (Gmail redirect) */}
+                <a
+                  href={gmailUrl}
+                  className="flex gap-4 items-start p-4 bg-white/[0.01] border border-white/5 hover:border-gold-500/30 rounded-2xl group transition-all duration-300 cursor-pointer block"
+                >
+                  <div className="w-12 h-12 bg-[#ea4335]/10 border border-[#ea4335]/20 group-hover:border-[#ea4335]/50 rounded-xl flex items-center justify-center text-[#ea4335] group-hover:scale-105 transition-all duration-300">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                   </div>
                   <div>
                     <span className="block text-[10px] font-sans text-navy-200/40 uppercase tracking-widest font-bold mb-1">
-                      Correo Electrónico
+                      Enviar Correo Electrónico
                     </span>
-                    <a href="mailto:contacto@proserco.com" className="text-white hover:text-gold-400 transition-colors font-sans font-semibold text-sm sm:text-base">
+                    <span className="text-white group-hover:text-gold-400 transition-colors font-sans font-semibold text-sm sm:text-base">
                       contacto@proserco.com
-                    </a>
+                    </span>
+                    <span className="block text-[11px] text-navy-200/30 font-sans mt-0.5">
+                      Abrir cliente de correo o Gmail
+                    </span>
                   </div>
-                </div>
+                </a>
 
-                {/* Phone detail */}
-                <div className="flex gap-4 items-start group">
-                  <div className="w-12 h-12 bg-white/[0.02] border border-white/5 group-hover:border-gold-500/30 rounded-xl flex items-center justify-center text-gold-400 group-hover:scale-105 transition-all duration-300">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                {/* WhatsApp Link integration */}
+                <a
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex gap-4 items-start p-4 bg-white/[0.01] border border-white/5 hover:border-gold-500/30 rounded-2xl group transition-all duration-300 cursor-pointer block"
+                >
+                  <div className="w-12 h-12 bg-emerald-500/10 border border-emerald-500/20 group-hover:border-emerald-500/50 rounded-xl flex items-center justify-center text-emerald-400 group-hover:scale-105 transition-all duration-300">
+                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.262 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.66.986 3.292 1.48 4.903 1.48 5.485 0 9.948-4.471 9.951-9.968.002-2.661-1.034-5.163-2.915-7.047C16.71 1.732 14.218.694 11.562.694c-5.489 0-9.956 4.472-9.959 9.97-.001 1.83.5 3.585 1.455 5.093l-1.026 3.75 3.848-1.012c1.472.8 3.123 1.22 4.767 1.22zM17.48 14.86c-.3-.15-1.782-.88-2.062-.982-.28-.102-.484-.15-.69.155-.204.311-.79.982-.967 1.189-.18.205-.357.23-.656.08-1.516-.76-2.483-1.34-3.473-3.036-.263-.45.263-.42.75-.1.442.29.622.656.802.766.18.11.09.215-.045.365-.135.15-.454.504-.557.625-.102.12-.204.135-.503-.015-.3-.15-1.27-.47-2.417-1.493-.896-.8-1.5-1.787-1.677-2.088-.178-.3-.02-.462.13-.611.135-.135.3-.347.45-.52.15-.173.2-.3.3-.5.1-.2.05-.375-.025-.525-.075-.15-.69-1.666-.948-2.28-.25-.6-.52-.52-.71-.53-.18-.01-.39-.01-.6-.01-.21 0-.55.08-.84.4-.29.32-1.12 1.1-1.12 2.685 0 1.585 1.15 3.12 1.31 3.33.16.21 2.27 3.47 5.5 4.87.77.33 1.37.53 1.84.68.77.24 1.48.21 2.04.12.63-.09 1.78-.73 2.03-1.43.25-.7.25-1.3.18-1.43-.07-.12-.26-.18-.56-.33z" />
                     </svg>
                   </div>
                   <div>
                     <span className="block text-[10px] font-sans text-navy-200/40 uppercase tracking-widest font-bold mb-1">
-                      Central Telefónica
+                      Iniciar Chat en WhatsApp
                     </span>
-                    <a href="tel:+56223456789" className="text-white hover:text-gold-400 transition-colors font-sans font-semibold text-sm sm:text-base">
-                      +56 2 2345 6789
-                    </a>
+                    <span className="text-white group-hover:text-gold-400 transition-colors font-sans font-semibold text-sm sm:text-base">
+                      +56 9 3456 7890
+                    </span>
+                    <span className="block text-[11px] text-navy-200/30 font-sans mt-0.5">
+                      Mensaje pre-escrito listo
+                    </span>
                   </div>
-                </div>
+                </a>
 
                 {/* Office detail */}
-                <div className="flex gap-4 items-start group">
-                  <div className="w-12 h-12 bg-white/[0.02] border border-white/5 group-hover:border-gold-500/30 rounded-xl flex items-center justify-center text-gold-400 group-hover:scale-105 transition-all duration-300">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="flex gap-4 items-start p-4 bg-white/[0.01] border border-white/5 rounded-2xl">
+                  <div className="w-12 h-12 bg-gold-500/10 border border-gold-500/20 rounded-xl flex items-center justify-center text-gold-400">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                   </div>
                   <div>
                     <span className="block text-[10px] font-sans text-navy-200/40 uppercase tracking-widest font-bold mb-1">
-                      Casa Matriz
+                      Oficina Central
                     </span>
                     <span className="text-white font-sans font-semibold text-sm sm:text-base">
                       Av. Apoquindo 3400, Las Condes. Santiago, Chile.
@@ -393,7 +408,7 @@ export function Contact() {
                           type="button"
                           onClick={handleNextStep}
                           disabled={!profile || !serviceNeeded}
-                          className="flex-grow py-3.5 bg-gradient-to-r from-gold-600 to-gold-400 disabled:opacity-40 disabled:hover:scale-100 disabled:pointer-events-none text-navy-950 font-sans font-bold text-sm sm:text-base rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer text-center"
+                          className="flex-grow py-3.5 btn-gold disabled:opacity-40 disabled:hover:scale-100 disabled:pointer-events-none rounded-xl text-navy-950 font-sans font-bold text-sm sm:text-base cursor-pointer text-center"
                         >
                           Continuar
                         </button>
@@ -401,7 +416,7 @@ export function Contact() {
                         <button
                           type="submit"
                           disabled={isSubmitting}
-                          className="flex-grow py-3.5 bg-gradient-to-r from-gold-600 to-gold-400 disabled:opacity-50 text-navy-950 font-sans font-bold text-sm sm:text-base rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer text-center flex items-center justify-center gap-3"
+                          className="flex-grow py-3.5 btn-gold disabled:opacity-50 rounded-xl text-navy-950 font-sans font-bold text-sm sm:text-base cursor-pointer text-center flex items-center justify-center gap-3"
                         >
                           {isSubmitting ? (
                             <>

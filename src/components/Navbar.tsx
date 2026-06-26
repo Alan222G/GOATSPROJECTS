@@ -3,19 +3,26 @@ import { cn } from "@/utils/cn";
 
 interface NavbarProps {
   scrollToSection: (id: string) => void;
+  onOpenLogin: () => void;
+  isAuthenticated: boolean;
+  userEmail: string;
+  onLogout: () => void;
 }
 
-export function Navbar({ scrollToSection }: NavbarProps) {
+export function Navbar({
+  scrollToSection,
+  onOpenLogin,
+  isAuthenticated,
+  userEmail,
+  onLogout,
+}: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      // Background shift
       setIsScrolled(window.scrollY > 20);
-
-      // Scroll progress indicator
       const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
       if (totalHeight > 0) {
         const progress = (window.scrollY / totalHeight) * 100;
@@ -41,7 +48,7 @@ export function Navbar({ scrollToSection }: NavbarProps) {
         className={cn(
           "fixed top-0 left-0 right-0 z-50 transition-all duration-500",
           isScrolled
-            ? "bg-[#0b132b]/85 backdrop-blur-md border-b border-gold-500/10 py-3 shadow-lg shadow-navy-950/20"
+            ? "bg-[#050814]/90 backdrop-blur-md border-b border-gold-500/10 py-3 shadow-lg shadow-navy-950/40"
             : "bg-transparent py-5"
         )}
       >
@@ -71,29 +78,52 @@ export function Navbar({ scrollToSection }: NavbarProps) {
           </button>
 
           {/* Desktop Menu */}
-          <ul className="hidden lg:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <li key={link.label}>
-                <button
-                  onClick={() => scrollToSection(link.target)}
-                  className="text-sm font-sans font-medium text-navy-200/90 hover:text-gold-400 transition-all duration-300 relative py-2 cursor-pointer group"
-                >
-                  {link.label}
-                  <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-gold-500 to-gold-400 transition-all duration-300 group-hover:w-full" />
-                </button>
-              </li>
-            ))}
-          </ul>
+          {!isAuthenticated && (
+            <ul className="hidden lg:flex items-center gap-8">
+              {navLinks.map((link) => (
+                <li key={link.label}>
+                  <button
+                    onClick={() => scrollToSection(link.target)}
+                    className="text-sm font-sans font-medium text-navy-200/90 hover:text-gold-400 transition-all duration-300 relative py-2 cursor-pointer group"
+                  >
+                    {link.label}
+                    <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-gold-500 to-gold-400 transition-all duration-300 group-hover:w-full" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
 
-          {/* Desktop CTA */}
-          <div className="hidden lg:block">
-            <button
-              onClick={() => scrollToSection("contact")}
-              className="relative px-5 py-2.5 bg-gradient-to-r from-gold-600 to-gold-400 text-navy-950 font-sans font-semibold text-sm rounded shadow-lg shadow-gold-500/10 hover:shadow-gold-500/25 hover:from-gold-500 hover:to-gold-300 hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer overflow-hidden group"
-            >
-              <span className="absolute inset-0 w-full h-full bg-white/20 transform -skew-x-12 -translate-x-full group-hover:animate-shimmer" style={{ background: "linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%)", backgroundSize: "200% 100%" }} />
-              Consulta Gratuita
-            </button>
+          {/* Desktop Auth and CTA */}
+          <div className="hidden lg:flex items-center gap-4">
+            {isAuthenticated ? (
+              <div className="flex items-center gap-4">
+                <span className="text-xs font-sans text-navy-200/60">
+                  Sesión: <strong className="text-gold-400">{userEmail.split("@")[0]}</strong>
+                </span>
+                <button
+                  onClick={onLogout}
+                  className="px-4 py-2 border border-rose-500/20 hover:border-rose-500/50 text-rose-400 hover:text-white hover:bg-rose-500/10 text-xs font-bold rounded-lg transition-all duration-300 cursor-pointer"
+                >
+                  Salir
+                </button>
+              </div>
+            ) : (
+              <>
+                <button
+                  onClick={onOpenLogin}
+                  className="text-sm font-sans font-semibold text-white hover:text-gold-400 px-4 py-2 hover:bg-white/[0.02] rounded-lg transition-all duration-300 cursor-pointer"
+                >
+                  Portal Cliente
+                </button>
+                <button
+                  onClick={() => scrollToSection("contact")}
+                  className="btn-gold px-5 py-2.5 text-navy-950 font-sans font-bold text-sm rounded shadow-lg shadow-gold-500/10 cursor-pointer"
+                >
+                  Consulta Gratuita
+                </button>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -136,46 +166,86 @@ export function Navbar({ scrollToSection }: NavbarProps) {
         )}
       >
         <ul className="flex flex-col gap-6 text-center mb-8">
-          {navLinks.map((link, idx) => (
+          {!isAuthenticated ? (
+            navLinks.map((link, idx) => (
+              <li
+                key={link.label}
+                style={{
+                  transitionDelay: mobileMenuOpen ? `${idx * 75}ms` : "0ms",
+                  transform: mobileMenuOpen ? "translateY(0)" : "translateY(20px)",
+                  opacity: mobileMenuOpen ? 1 : 0,
+                }}
+                className="transition-all duration-500"
+              >
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    setTimeout(() => scrollToSection(link.target), 300);
+                  }}
+                  className="text-2xl font-serif font-semibold text-navy-100 hover:text-gold-400 transition-colors"
+                >
+                  {link.label}
+                </button>
+              </li>
+            ))
+          ) : (
             <li
-              key={link.label}
               style={{
-                transitionDelay: mobileMenuOpen ? `${idx * 75}ms` : "0ms",
                 transform: mobileMenuOpen ? "translateY(0)" : "translateY(20px)",
                 opacity: mobileMenuOpen ? 1 : 0,
               }}
               className="transition-all duration-500"
             >
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  setTimeout(() => scrollToSection(link.target), 300);
-                }}
-                className="text-2xl font-serif font-semibold text-navy-100 hover:text-gold-400 transition-colors"
-              >
-                {link.label}
-              </button>
+              <span className="text-xl font-sans text-navy-200/60 block mb-2">
+                Conectado como:
+              </span>
+              <span className="text-2xl font-serif font-bold text-gold-400 block">
+                {userEmail}
+              </span>
             </li>
-          ))}
+          )}
         </ul>
 
         <div
           style={{
-            transitionDelay: mobileMenuOpen ? `${navLinks.length * 75}ms` : "0ms",
+            transitionDelay: mobileMenuOpen ? `${isAuthenticated ? 1 : navLinks.length * 75}ms` : "0ms",
             transform: mobileMenuOpen ? "translateY(0)" : "translateY(20px)",
             opacity: mobileMenuOpen ? 1 : 0,
           }}
-          className="transition-all duration-500"
+          className="transition-all duration-500 flex flex-col gap-4 w-full max-w-[240px]"
         >
-          <button
-            onClick={() => {
-              setMobileMenuOpen(false);
-              setTimeout(() => scrollToSection("contact"), 300);
-            }}
-            className="px-8 py-3.5 bg-gradient-to-r from-gold-600 to-gold-400 text-navy-950 font-sans font-bold rounded shadow-lg shadow-gold-500/20 hover:scale-105 active:scale-95 transition-all duration-300"
-          >
-            Consulta Gratuita
-          </button>
+          {isAuthenticated ? (
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                onLogout();
+              }}
+              className="w-full py-3.5 border border-rose-500/20 text-rose-400 font-sans font-bold rounded-xl hover:bg-rose-500/10 transition-colors text-center cursor-pointer"
+            >
+              Cerrar Sesión
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onOpenLogin();
+                }}
+                className="w-full py-3 border border-white/15 text-white font-sans font-semibold rounded-xl hover:bg-white/[0.03] transition-colors text-center cursor-pointer"
+              >
+                Portal Cliente
+              </button>
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setTimeout(() => scrollToSection("contact"), 300);
+                }}
+                className="w-full py-3.5 btn-gold font-sans font-bold rounded-xl text-center cursor-pointer"
+              >
+                Consulta Gratuita
+              </button>
+            </>
+          )}
         </div>
       </div>
     </>

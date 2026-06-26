@@ -49,9 +49,9 @@ export function Services() {
         </svg>
       ),
       features: [
-        "Procesamiento mensual de transacciones contables en sistemas ERP ERPs en la nube",
+        "Procesamiento mensual de transacciones contables en sistemas ERP en la nube",
         "Preparación de estados financieros mensuales para toma de decisiones",
-        "Administración de nóminas, cotizaciones provisionales y contratos laborales",
+        "Administración de nóminas, cotizaciones previsionales y contratos laborales",
         "Cumplimiento mensual de obligaciones de IVA y retenciones"
       ],
       workflow: [
@@ -110,7 +110,7 @@ export function Services() {
   ];
 
   return (
-    <section id="services" className="py-24 bg-gradient-to-b from-[#0f172a] to-[#0b132b] relative overflow-hidden">
+    <section id="services" className="py-24 bg-gradient-to-b from-[#0b132b] to-[#050814] relative overflow-hidden">
       
       {/* Decorative Orbs */}
       <div className="absolute top-1/4 right-0 w-[400px] h-[400px] rounded-full bg-gold-500/5 blur-[120px] pointer-events-none" />
@@ -146,7 +146,7 @@ export function Services() {
             >
               <div
                 onClick={() => setSelectedService(service)}
-                className="group h-full glass hover:border-gold-500/40 p-8 rounded-2xl transition-all duration-500 hover:-translate-y-2 cursor-pointer flex flex-col justify-between shadow-lg hover:shadow-gold-500/5"
+                className="glow-card group h-full glass hover:border-gold-500/40 p-8 rounded-2xl transition-all duration-500 hover:-translate-y-2 cursor-pointer flex flex-col justify-between shadow-lg hover:shadow-gold-500/5"
               >
                 <div>
                   <div className="w-14 h-14 bg-navy-950/60 border border-white/5 rounded-xl flex items-center justify-center mb-8 group-hover:scale-110 group-hover:border-gold-500/30 transition-all duration-300">
@@ -278,7 +278,7 @@ export function Services() {
                     setTimeout(() => element.scrollIntoView({ behavior: "smooth" }), 200);
                   }
                 }}
-                className="px-6 py-2.5 bg-gradient-to-r from-gold-600 to-gold-400 text-navy-950 font-sans text-sm font-bold rounded shadow-lg shadow-gold-500/10 hover:from-gold-500 hover:to-gold-300 hover:scale-105 active:scale-95 transition-all duration-300 text-center cursor-pointer"
+                className="btn-gold px-6 py-2.5 text-navy-950 font-sans text-sm font-bold rounded shadow-lg shadow-gold-500/10 text-center cursor-pointer"
               >
                 Cotizar este Servicio
               </a>
